@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#eeeeee"
+    android:orientation="vertical" >
+
+
+
+
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:id="@+id/loginInputLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/input_fields_2"
+            android:orientation="vertical"
+            android:paddingBottom="6dp"
+            android:paddingTop="6dp"
+            android:weightSum="2" >
+
+            <EditText
+                android:id="@+id/username_email_loginED"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="6dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="2dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:hint="Username or Email"
+                android:inputType="textEmailAddress"
+                android:textStyle="normal"
+                android:typeface="serif" >
+
+                <requestFocus />
+            </EditText>
+
+            <EditText
+                android:id="@+id/pasword_ed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="2dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:textStyle="normal"
+                android:typeface="serif" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/loginInnerB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/loginInputLayout"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/login_btn" />
+
+        <TextView
+            android:id="@+id/forgotPassTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/loginInnerB"
+            android:layout_below="@+id/loginInnerB"
+            android:layout_marginTop="20dp"
+            android:paddingBottom="6dp"
+            android:paddingTop="6dp"
+            android:text="Forgot Password?" />
+
+        <CheckBox
+            android:id="@+id/stayLogIncheckBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/forgotPassTxt"
+            android:layout_alignBottom="@+id/forgotPassTxt"
+            android:layout_alignLeft="@+id/loginInnerB"
+            android:button="@drawable/customdrawablecheckbox"
+            android:text="Stay Signed In" />
+    </RelativeLayout>
+
+</LinearLayout>
