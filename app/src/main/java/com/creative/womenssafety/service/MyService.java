@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -59,8 +60,9 @@ public class MyService extends Service {
 
         Log.d("DEBUG", "onStart");
 
-        if (saveManager.getUserGcmRegId().equals("0")) {
-            //Log.d("DEBUG", "user enable");
+        if (!saveManager.getUserGcmRegId().equals("0") && saveManager.getIsLoggedIn()) {
+
+            Toast.makeText(this,"home btn logged in",Toast.LENGTH_SHORT);
             if (checkDeviceConfig.isConnectingToInternet()) {
                 //Log.d("DEBUG", "user connextion ok");
                 if (gps.canGetLocation()) {
@@ -73,6 +75,8 @@ public class MyService extends Service {
                     String URL = AppConstant.getUrlForHelpSend(saveManager.getUserGcmRegId(), user_lat, user_lang);
 
                     Log.d("DEBUG_helpUrl", URL);
+
+                    Toast.makeText(this,"home btn press sucess",Toast.LENGTH_SHORT);
 
                     hitUrl(URL);
                 }

@@ -50,7 +50,11 @@ public class ScreenOnOffReceiver extends BroadcastReceiver {
 
         if(homeBtnClickCounter >= 2 )
         {
+
+
             Log.i("DEBUG", String.valueOf(homeBtnClickCounter));
+            homeBtnClickCounter = 0;
+            saveManager.setHomebuttonClickCounter(homeBtnClickCounter);
             //startTheservice
             Intent intent2 = new Intent(context,
                     MyService.class);

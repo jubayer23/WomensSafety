@@ -1,26 +1,18 @@
 package com.creative.womenssafety.userview;
 
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
@@ -32,7 +24,6 @@ import com.creative.womenssafety.appdata.AppController;
 import com.creative.womenssafety.sharedprefs.SaveManager;
 import com.creative.womenssafety.utils.CheckDeviceConfig;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -84,7 +75,16 @@ public class UserLoginActivity extends AppCompatActivity {
 
                     if (showWarningDialog()) {
                         progressDialog.show();
-                        new GCMRegistrationTask().execute();
+
+                        if(saveManager.getUserGcmRegId().equals("0"))
+                        {
+                            new GCMRegistrationTask().execute();
+                        }else
+                        {
+                            LoginCheck(saveManager.getUserGcmRegId());
+                        }
+
+
                     }
 
                 } else {
@@ -219,32 +219,17 @@ public class UserLoginActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
 
+                        try {
 
 
+                            parseJsonFeed(new JSONObject(response));
+                        } catch (JSONException e) {
+
+                            if (progressDialog.isShowing()) progressDialog.dismiss();
+
+                        }
 
 
-                        saveManager.setIsLoggedIn(true);
-
-                        Intent intent = new Intent(UserLoginActivity.this, MainActivity.class);
-
-                        startActivity(intent);
-
-                        LoginOrSingupActivity.loginOrSignUpActivity.finish();
-
-
-                        if (progressDialog.isShowing()) progressDialog.dismiss();
-
-                        finish();
-                       // try {
-
-                       //     if (response != null)
-                        //        parseJsonFeed(new JSONObject(response));
-                        //} catch (JSONException e) {
-
-
-
-
-                       // }
                     }
                 }, new com.android.volley.Response.ErrorListener() {
             @Override
@@ -272,7 +257,7 @@ public class UserLoginActivity extends AppCompatActivity {
             if (progressDialog.isShowing()) progressDialog.dismiss();
 
 
-            gotoFrontPage(1);
+            gotoFrontPage(status);
 
 
         } catch (JSONException e) {

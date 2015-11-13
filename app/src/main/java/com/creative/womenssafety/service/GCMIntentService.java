@@ -10,7 +10,9 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
+import com.creative.womenssafety.MainActivity;
 import com.creative.womenssafety.MapsActivity;
 import com.creative.womenssafety.R;
 import com.creative.womenssafety.receiver.GCMBroadcastReceiver;
@@ -50,12 +52,16 @@ public class GCMIntentService extends IntentService {
             sendNotification("Message: " + message + "\n" + "Server Time: "
                     + serverTime, Double.parseDouble(lat), Double.parseDouble(lng));
         }
+
+
         // Release the wake lock provided by the WakefulBroadcastReceiver.
         GCMBroadcastReceiver.completeWakefulIntent(intent);
     }
 
     private void sendNotification(String msg, double lat, double lng) {
 
+
+        Log.d("DEBUG_noti", "onSendNoti");
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         Intent notifyIntent = new Intent(this, MapsActivity.class);
         notifyIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);

@@ -74,7 +74,13 @@ public class UserRegistrationActivity extends AppCompatActivity {
                     boolean checkWarn = showWarningDialog();
                     if (checkWarn) {
                         progressDialog.show();
-                        new GCMRegistrationTask().execute();
+                        if(saveManager.getUserGcmRegId().equals("0"))
+                        {
+                            new GCMRegistrationTask().execute();
+                        }else
+                        {
+                            singnUP(saveManager.getUserGcmRegId());
+                        }
                     }
                 } else {
                     cd.showAlertDialogToNetworkConnection(UserRegistrationActivity.this, "No Internet Connection",
@@ -205,36 +211,23 @@ public class UserRegistrationActivity extends AppCompatActivity {
                     public void onResponse(String response) {
 
 
-
-                        Log.d("DEBUG_onresponse",response);
-                       // try {
-
-                           // if (response != null)
-                            //    parseJsonFeed(new JSONObject(response));
-                       // } catch (JSONException e) {
+                        Log.d("DEBUG_onresponse", response);
+                        try {
+                            parseJsonFeed(new JSONObject(response));
+                        } catch (JSONException e) {
 
                             if (progressDialog.isShowing()) progressDialog.dismiss();
 
+                        }
 
 
-                        saveManager.setIsLoggedIn(true);
-
-                        Intent intent = new Intent(UserRegistrationActivity.this, MainActivity.class);
-
-                        startActivity(intent);
-
-                        LoginOrSingupActivity.loginOrSignUpActivity.finish();
-
-                        finish();
-
-
-                       // }
+                        // }
                     }
                 }, new com.android.volley.Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 if (progressDialog.isShowing()) progressDialog.dismiss();
-               // Log.d("DEBUG_onError","error");
+                // Log.d("DEBUG_onError","error");
 
             }
         });
@@ -256,7 +249,7 @@ public class UserRegistrationActivity extends AppCompatActivity {
             if (progressDialog.isShowing()) progressDialog.dismiss();
 
 
-            gotoFrontPage(1);
+            gotoFrontPage(status);
 
 
         } catch (JSONException e) {

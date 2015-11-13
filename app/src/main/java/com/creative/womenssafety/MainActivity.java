@@ -124,7 +124,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void LogOut(View view) {
-        saveManager.setUserGcmRegId("0");
         saveManager.setIsLoggedIn(false);
         Intent home = new Intent(MainActivity.this, LoginOrSingupActivity.class);
         startActivity(home);
