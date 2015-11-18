@@ -5,9 +5,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
-/**
- * Created by fahad_000 on 8/4/2015.
- */
+
 public class DeviceInfoUtils {
     static String deviceId = "";
     public static String getDeviceID(Context context){
