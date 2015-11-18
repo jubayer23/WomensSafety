@@ -22,6 +22,7 @@ import com.creative.womenssafety.appdata.AppConstant;
 import com.creative.womenssafety.appdata.AppController;
 import com.creative.womenssafety.sharedprefs.SaveManager;
 import com.creative.womenssafety.utils.CheckDeviceConfig;
+import com.creative.womenssafety.utils.DeviceInfoUtils;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import org.json.JSONException;
@@ -193,7 +194,7 @@ public class UserRegistrationActivity extends AppCompatActivity {
         // TODO Auto-generated method stub
 
 
-        String url_reg = AppConstant.getUserRegUrl(gcmRegId, userName, email, password, phoneNo, "dummy");
+        String url_reg = AppConstant.getUserRegUrl(gcmRegId, userName, email, password, phoneNo, DeviceInfoUtils.getDeviceID(UserRegistrationActivity.this));
 
         Log.d("DEBUG_regUrl", url_reg);
 

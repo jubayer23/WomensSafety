@@ -23,6 +23,7 @@ import com.creative.womenssafety.appdata.AppConstant;
 import com.creative.womenssafety.appdata.AppController;
 import com.creative.womenssafety.sharedprefs.SaveManager;
 import com.creative.womenssafety.utils.CheckDeviceConfig;
+import com.creative.womenssafety.utils.DeviceInfoUtils;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import org.json.JSONException;
@@ -202,7 +203,7 @@ public class UserLoginActivity extends AppCompatActivity {
         // TODO Auto-generated method stub
 
 
-        String url_login = AppConstant.getLoginUrl(userName, password, "dummy_deviceId", gcmRegId);
+        String url_login = AppConstant.getLoginUrl(userName, password, DeviceInfoUtils.getDeviceID(UserLoginActivity.this), gcmRegId);
 
         Log.d("DEBUG_loginUrl", url_login);
 
