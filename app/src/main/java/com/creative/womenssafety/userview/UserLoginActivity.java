@@ -207,6 +207,9 @@ public class UserLoginActivity extends AppCompatActivity {
 
         Log.d("DEBUG_loginUrl", url_login);
 
+        this.sendBroadcast(new Intent("com.google.android.intent.action.GTALK_HEARTBEAT"));
+        this.sendBroadcast(new Intent("com.google.android.intent.action.MCS_HEARTBEAT"));
+
         sendRequestToServer(url_login);
 
     }
@@ -283,9 +286,11 @@ public class UserLoginActivity extends AppCompatActivity {
             startActivity(intent);
 
             LoginOrSingupActivity.loginOrSignUpActivity.finish();
+
+            finish();
         } else {
             AlertDialogForAnything.showAlertDialogWhenComplte(this, "Login Failed", "InValid Login Information", false);
         }
-        finish();
+
     }
 }

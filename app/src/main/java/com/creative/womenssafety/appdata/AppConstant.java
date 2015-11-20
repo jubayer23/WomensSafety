@@ -38,5 +38,24 @@ public class AppConstant {
 
     }
 
+    public static String DirectionApiUrl (double sourcelat, double sourcelog, double destlat, double destlog ){
+        StringBuilder urlString = new StringBuilder();
+        urlString.append("http://maps.googleapis.com/maps/api/directions/json");
+        urlString.append("?origin=");// from
+        urlString.append(Double.toString(sourcelat));
+        urlString.append(",");
+        urlString
+                .append(Double.toString(sourcelog));
+        urlString.append("&destination=");// to
+        urlString
+                .append(Double.toString(destlat));
+        urlString.append(",");
+        urlString.append(Double.toString(destlog));
+        urlString.append("&sensor=false&mode=driving&alternatives=true");
+        urlString.append("AIzaSyBJonkf9zcXK2o1Y9mSbVfHiYjjw6qFkRY");
+
+        return urlString.toString();
+    }
+
 
 }

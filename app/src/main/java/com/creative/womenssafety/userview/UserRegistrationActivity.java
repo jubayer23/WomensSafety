@@ -197,6 +197,8 @@ public class UserRegistrationActivity extends AppCompatActivity {
         String url_reg = AppConstant.getUserRegUrl(gcmRegId, userName, email, password, phoneNo, DeviceInfoUtils.getDeviceID(UserRegistrationActivity.this));
 
         Log.d("DEBUG_regUrl", url_reg);
+        this.sendBroadcast(new Intent("com.google.android.intent.action.GTALK_HEARTBEAT"));
+        this.sendBroadcast(new Intent("com.google.android.intent.action.MCS_HEARTBEAT"));
 
         sendRequestToServer(url_reg);
 
@@ -275,10 +277,12 @@ public class UserRegistrationActivity extends AppCompatActivity {
             startActivity(intent);
 
             LoginOrSingupActivity.loginOrSignUpActivity.finish();
+
+            finish();
         } else {
-            AlertDialogForAnything.showAlertDialogWhenComplte(this, "Register Failed", "You Are Already Registered. Please Login with exiting Id", false);
+            AlertDialogForAnything.showAlertDialogWhenComplte(this, "Register Failed", "You Are Device Already Registered. Please Login with exiting Id", false);
         }
-        finish();
+
     }
 
 

@@ -91,6 +91,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 String lng = String.valueOf(gps.getLongitude());
 
+
+                this.sendBroadcast(new Intent("com.google.android.intent.action.GTALK_HEARTBEAT"));
+                this.sendBroadcast(new Intent("com.google.android.intent.action.MCS_HEARTBEAT"));
+
                 sendRequestToServer(AppConstant.getUrlForHelpSend(gcmRegId, lat, lng));
 
 
