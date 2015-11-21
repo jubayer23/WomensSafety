@@ -15,6 +15,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.creative.womenssafety.appdata.AppConstant;
 import com.creative.womenssafety.appdata.AppController;
 import com.creative.womenssafety.receiver.ScreenOnOffReceiver;
+import com.creative.womenssafety.service.LockScreenService;
 import com.creative.womenssafety.sharedprefs.SaveManager;
 import com.creative.womenssafety.userview.LoginOrSingupActivity;
 import com.creative.womenssafety.userview.UserRegistrationActivity;
@@ -50,7 +51,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         gps = new GPSTracker(this);
 
-        registerReceiverForHomeButtonAction();
+        // start service for observing intents
+        startService(new Intent(this, LockScreenService.class));
 
 
         init();
@@ -63,8 +65,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mScreenStateReceiver = new ScreenOnOffReceiver();
 
-        registerReceiver(mScreenStateReceiver, new IntentFilter(Intent.ACTION_SCREEN_ON));
-        registerReceiver(mScreenStateReceiver, new IntentFilter(Intent.ACTION_SCREEN_OFF));
+        //registerReceiver(mScreenStateReceiver, new IntentFilter(Intent.ACTION_SCREEN_ON));
+        //registerReceiver(mScreenStateReceiver, new IntentFilter(Intent.ACTION_SCREEN_OFF));
+
+
+        IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
+        filter.addAction(Intent.ACTION_SCREEN_OFF);
+        registerReceiver(mScreenStateReceiver, filter);
     }
 
 

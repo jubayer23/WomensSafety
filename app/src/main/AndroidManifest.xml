@@ -76,6 +76,8 @@
             android:name=".service.MyService"
             android:enabled="true" />
 
+        <service android:name=".service.LockScreenService" />
+
         <!-- Goolge API Key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
