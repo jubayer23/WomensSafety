@@ -3,6 +3,8 @@ package com.creative.womenssafety.sharedprefs;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.ArrayList;
+
 public class SaveManager {
 
     // Shared Preferences
@@ -68,6 +70,47 @@ public class SaveManager {
     }
     public String getUserGcmRegId() {
         return mSharedPreferences.getString(KEY_USER_GCM_REG_ID, "0");
+    }
+
+    public void setPhoneName(ArrayList<String> list){
+        //editor = pref.edit();
+        editor.putInt("Count",  list.size());
+        int count = 0;
+        for (String i : list){
+            editor.putString("phoneNameValue_" + count++, i);
+        }
+
+        editor.commit();
+    }
+    public void setPhoneNumber(ArrayList<String> list){
+        //editor = pref.edit();
+        editor.putInt("Count",  list.size());
+        int count = 0;
+        for (String i : list){
+            editor.putString("phoneNumberValue_" + count++, i);
+        }
+
+        editor.commit();
+    }
+    public ArrayList<String> getPhoneNameArray(){
+        ArrayList<String> temp = new ArrayList<String>();
+
+        int count = mSharedPreferences.getInt("Count", 0);
+        temp.clear();
+        for (int i = 0; i < count; i++){
+            temp.add(mSharedPreferences.getString("phoneNameValue_" + i, ""));
+        }
+        return temp;
+    }
+    public ArrayList<String> getPhoneNumberArray(){
+        ArrayList<String> temp = new ArrayList<String>();
+
+        int count = mSharedPreferences.getInt("Count", 0);
+        temp.clear();
+        for (int i = 0; i < count; i++){
+            temp.add(mSharedPreferences.getString("phoneNumberValue_" + i, ""));
+        }
+        return temp;
     }
 
 }

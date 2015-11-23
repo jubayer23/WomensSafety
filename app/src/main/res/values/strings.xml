@@ -3,4 +3,6 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_user_login">UserLoginActivity</string>
     <string name="title_activity_user_registration">UserRegistrationActivity</string>
+    <string name="drawer_open">drawer open</string>
+    <string name="drawer_close">drawer close</string>
 </resources>
