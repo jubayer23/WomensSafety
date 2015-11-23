@@ -45,10 +45,13 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme" >
+
+         >
         <activity
             android:name=".userview.LoginOrSingupActivity"
-            android:theme="@style/AppTheme.NoActionBar" >
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -57,11 +60,14 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name" />
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme2"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".MapsActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"
+            android:screenOrientation="portrait"/>
 
         <!-- For receiving GCM message and registration success -->
         <receiver
@@ -94,7 +100,19 @@
             android:name=".userview.UserLoginActivity"
             android:label="@string/title_activity_user_login"
             android:parentActivityName=".userview.LoginOrSingupActivity"
-            android:theme="@style/AppTheme" >
+            android:theme="@style/AppTheme"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.creative.womenssafety.userview.LoginOrSingupActivity" />
+        </activity>
+
+        <activity
+            android:name=".userview.UserRegistrationActivity"
+            android:label="@string/title_activity_user_registration"
+            android:parentActivityName=".userview.LoginOrSingupActivity"
+            android:theme="@style/AppTheme"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.creative.womenssafety.userview.LoginOrSingupActivity" />
@@ -103,14 +121,17 @@
             android:name=".UserSettingView.ManageSmsList"
             android:label="Mange SMS List"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme" >
+            android:theme="@style/AppTheme"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.creative.womenssafety.MainActivity" />
         </activity>
 
         <activity
-            android:name=".utils.ContactListPickerUtils">
+            android:name=".utils.ContactListPickerUtils"
+            android:theme="@style/AppTheme"
+            android:screenOrientation="portrait" >
         </activity>
     </application>
 

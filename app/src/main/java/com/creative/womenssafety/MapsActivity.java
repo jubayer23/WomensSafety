@@ -91,7 +91,7 @@ public class MapsActivity extends FragmentActivity {
         LatLng position = new LatLng(lattitude, langitude);
 
 
-        setUpVictimInfo();
+        setUpVictimInfo(lattitude, langitude);
 
         sendRequestToServer(AppConstant.DirectionApiUrl(gps.getLatitude(), gps.getLongitude(), lattitude, langitude));
         mMap.addMarker(new MarkerOptions().position(position).title("VICTIM"));
@@ -100,14 +100,17 @@ public class MapsActivity extends FragmentActivity {
 
 
     }
-    private void setUpVictimInfo() {
+    private void setUpVictimInfo(final double deslat, final double deslang) {
         mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
 
             public View getInfoWindow(Marker arg0) {
-                View v = getLayoutInflater().inflate(R.layout.custom_infowindow, null);
-                TextView tv = (TextView) v.findViewById(R.id.victimInfo);
-                tv.setText(getLocationDetails(lattitude, langitude));
-                return v;
+                View v1;
+                TextView tv1;
+                    v1= getLayoutInflater().inflate(R.layout.custom_infowindow, null);
+                    tv1 = (TextView) v1.findViewById(R.id.victimInfo);
+                    tv1.setText(getLocationDetails(deslat, deslang));
+
+                return v1;
             }
 
             public View getInfoContents(Marker arg0) {
