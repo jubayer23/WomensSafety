@@ -1,0 +1,30 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="110dp"
+    android:layout_height="110dp"
+    android:orientation="vertical"
+    android:background="#F5DEB3"
+    android:gravity="center"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+
+
+        <TextView
+            android:id="@+id/victimInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="VICTIM"
+            android:textColor="#FF0000"
+            android:padding="10dp"
+            android:layout_centerInParent="true"
+            android:background="#00000000"
+            />
+
+    </RelativeLayout>
+
+</LinearLayout>
