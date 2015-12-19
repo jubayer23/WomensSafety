@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"></ListView>
+
+    <LinearLayout
+        android:id="@+id/btn_done"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/layout_back"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:textStyle="bold"
+            android:textSize="22sp"
+            android:textColor="#35A529"
+            android:text="DONE"
+            android:padding="15dp"/>
+
+
+    </LinearLayout>
+
+</RelativeLayout>
