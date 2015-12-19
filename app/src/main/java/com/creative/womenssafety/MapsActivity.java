@@ -5,14 +5,16 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+
+import com.creative.womenssafety.R;
 import com.creative.womenssafety.appdata.AppConstant;
 import com.creative.womenssafety.appdata.AppController;
 import com.creative.womenssafety.utils.GPSTracker;
@@ -42,7 +44,8 @@ public class MapsActivity extends FragmentActivity {
     private GoogleMap mMap;
     private double lattitude, langitude;
     private ProgressDialog progressDialog;
-
+    final int MY_LOCATION=1;
+    final int VICTIM_LOCATION=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,40 +93,42 @@ public class MapsActivity extends FragmentActivity {
         GPSTracker gps = new GPSTracker(this);
         LatLng position = new LatLng(lattitude, langitude);
 
-
-        setUpVictimInfo(lattitude, langitude);
-
+        setUpMarker(lattitude, langitude, gps.getLatitude(), gps.getLongitude());
         sendRequestToServer(AppConstant.DirectionApiUrl(gps.getLatitude(), gps.getLongitude(), lattitude, langitude));
-        mMap.addMarker(new MarkerOptions().position(position).title("VICTIM"));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(gps.getLatitude(), gps.getLongitude())).title("ME"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
 
 
     }
-    private void setUpVictimInfo(final double deslat, final double deslang) {
+    private void setUpMarker(double desLat, final double desLang,double srcLat,double srcLang) {
+
+
+        mMap.addMarker(new MarkerOptions().position(new LatLng(desLat,desLang)))
+                .setSnippet(getLocationDetails(desLat,desLang,VICTIM_LOCATION));
+
+        mMap.addMarker(new MarkerOptions().position(new LatLng(srcLat,srcLang))).
+                setSnippet(getLocationDetails(srcLat,srcLang, MY_LOCATION));
+
         mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
 
             public View getInfoWindow(Marker arg0) {
-                View v1;
-                TextView tv1;
-                    v1= getLayoutInflater().inflate(R.layout.custom_infowindow, null);
-                    tv1 = (TextView) v1.findViewById(R.id.victimInfo);
-                    tv1.setText(getLocationDetails(deslat, deslang));
-
-                return v1;
+                return null;
             }
 
             public View getInfoContents(Marker arg0) {
 
-                return null;
-
+                View v = getLayoutInflater().inflate(R.layout.custom_infowindow, null);
+                TextView tv = (TextView) v.findViewById(R.id.victimInfo);
+                tv.setText(arg0.getSnippet());
+                return v;
             }
         });
     }
-    private String getLocationDetails(double lat,double lang) {
+    private String getLocationDetails(double lat,double lang,int type) {
         Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-        String add="        VICTIM        ";
-
+        String add;
+        if(type ==1 )
+            add="        ME        ";
+        else add="     VICTIM       ";
         List<Address> addresses  = null;
         try {
             addresses = geocoder.getFromLocation(lat, lang, 1);
@@ -167,7 +172,6 @@ public class MapsActivity extends FragmentActivity {
         }
         return add;
     }
-
 
 
     public void sendRequestToServer(String url) {
