@@ -1,10 +1,13 @@
 package com.creative.womenssafety;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
@@ -21,6 +24,7 @@ import com.creative.womenssafety.utils.GPSTracker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -39,13 +43,14 @@ import java.util.Locale;
 /**
  * Created by Ikhtiar on 11/9/2015.
  */
-public class MapsActivity extends FragmentActivity {
+public class MapsActivity extends FragmentActivity implements GoogleMap.OnInfoWindowClickListener {
 
     private GoogleMap mMap;
     private double lattitude, langitude;
     private ProgressDialog progressDialog;
-    final int MY_LOCATION=1;
-    final int VICTIM_LOCATION=0;
+    final int MY_LOCATION = 1;
+    final int VICTIM_LOCATION = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,8 +73,7 @@ public class MapsActivity extends FragmentActivity {
         }
     }
 
-    private void init()
-    {
+    private void init() {
 
     }
 
@@ -99,77 +103,78 @@ public class MapsActivity extends FragmentActivity {
 
 
     }
-    private void setUpMarker(double desLat, final double desLang,double srcLat,double srcLang) {
+
+    private void setUpMarker(double desLat, final double desLang, double srcLat, double srcLang) {
+
+        final Marker m1 = mMap.addMarker(new MarkerOptions().position(new LatLng(desLat, desLang)));
+        m1.setSnippet(getLocationDetails(desLat, desLang));
+        m1.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_victim));
+        m1.setTitle("VICTIM");
 
 
-        mMap.addMarker(new MarkerOptions().position(new LatLng(desLat,desLang)))
-                .setSnippet(getLocationDetails(desLat,desLang,VICTIM_LOCATION));
-
-        mMap.addMarker(new MarkerOptions().position(new LatLng(srcLat,srcLang))).
-                setSnippet(getLocationDetails(srcLat,srcLang, MY_LOCATION));
+        Marker m2 = mMap.addMarker(new MarkerOptions().position(new LatLng(srcLat, srcLang)));
+        m2.setSnippet(getLocationDetails(srcLat, srcLang));
+        m2.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_me));
+        m2.setTitle("ME");
 
         mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
 
-            public View getInfoWindow(Marker arg0) {
+            public View getInfoWindow(Marker marker) {
                 return null;
             }
 
-            public View getInfoContents(Marker arg0) {
+            public View getInfoContents(Marker marker) {
+                LatLng position = new LatLng(lattitude, langitude);
+                View v;
+                TextView tv_title, tv_info;
 
-                View v = getLayoutInflater().inflate(R.layout.custom_infowindow, null);
-                TextView tv = (TextView) v.findViewById(R.id.victimInfo);
-                tv.setText(arg0.getSnippet());
-                return v;
+                if (marker.equals(m1)) {
+                    v = getLayoutInflater().inflate(R.layout.custom_infowindow, null);
+                    tv_title = (TextView) v.findViewById(R.id.victimtitle);
+                    tv_info = (TextView) v.findViewById(R.id.victimInfo);
+                    tv_title.setText(marker.getTitle());
+                    tv_info.setText(marker.getSnippet());
+                    return v;
+                } else {
+                    v = getLayoutInflater().inflate(R.layout.custom_infowindow_me, null);
+                    tv_title = (TextView) v.findViewById(R.id.metitle);
+                    tv_info = (TextView) v.findViewById(R.id.meInfo);
+                    tv_title.setText(marker.getTitle());
+                    tv_info.setText(marker.getSnippet());
+                    return v;
+                }
             }
         });
+
+        mMap.setOnInfoWindowClickListener(this);
     }
-    private String getLocationDetails(double lat,double lang,int type) {
+
+    private String getLocationDetails(double lat, double lang) {
         Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-        String add;
-        if(type ==1 )
-            add="        ME        ";
-        else add="     VICTIM       ";
-        List<Address> addresses  = null;
+        String add = "";
+
+        List<Address> addresses = null;
         try {
             addresses = geocoder.getFromLocation(lat, lang, 1);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        if(addresses!=null) {
-            String address="";
-            for(int i=0;i<addresses.get(0).getMaxAddressLineIndex();i++){
-                address += addresses.get(0).getAddressLine(i);
-                if(addresses.get(0).getAddressLine(i+1)!=null && !addresses.get(0).getAddressLine(i+1).isEmpty())
-                    address +="\n";
-            }
-
-            String knownName = addresses.get(0).getFeatureName();
-            String premises = addresses.get(0).getPremises();
+        if (addresses != null) {
             String city = addresses.get(0).getLocality();
             String state = addresses.get(0).getAdminArea();
-            String zip = addresses.get(0).getPostalCode();
-            String country = addresses.get(0).getCountryName();
-            Bundle extras = addresses.get(0).getExtras();
-            String subadminarea = addresses.get(0).getSubAdminArea();
-            String SubLocality  = addresses.get(0).getSubLocality();
-            String SubThoroughfare = addresses.get(0).getSubThoroughfare();
+            String SubLocality = addresses.get(0).getSubLocality();
             String Thoroughfare = addresses.get(0).getThoroughfare();
+            String country = addresses.get(0).getCountryName();
 
-
-            if(address!=null && !address.isEmpty())add+="\n\nAddressLine : "+address;
-            if(knownName!=null && !knownName.isEmpty())add+="\nFeatureName : "+knownName;
-            if(premises!=null && !premises.isEmpty())add+="\nPremises : "+premises;
-            if(zip!=null && !zip.isEmpty())add+="\nZip : "+zip;
-            if(state!=null && !state.isEmpty())add+="\nState : "+state;
-            if(city!=null && !city.isEmpty())add+="\nCity : "+city;
-            if(country!=null && !country.isEmpty())add+="\nCountry : "+country;
-            if(extras!=null && !extras.isEmpty())add+="\nExtras : "+extras;
-            if(subadminarea!=null && !subadminarea.isEmpty())add+="\nSubAdminArea : "+subadminarea;
-            if(SubLocality !=null && !SubLocality.isEmpty())add+="\nSubLocality : "+SubLocality;
-            if(SubThoroughfare !=null && !SubThoroughfare.isEmpty())add+="\nSubThoroughfare : "+SubThoroughfare;
-            if(Thoroughfare !=null && !Thoroughfare.isEmpty())add+="\nThoroughfare : "+Thoroughfare;
+            if (Thoroughfare != null && !Thoroughfare.isEmpty())
+                add += Thoroughfare + ",";
+            if (SubLocality != null && !SubLocality.isEmpty())
+                add += "\n(Around " + SubLocality + "),";
+            if (state != null && !state.isEmpty()) add += "\n" + state + ",";
+            if (city != null && !city.isEmpty()) add += "\n" + city;
+            else if (country != null && !country.isEmpty()) add += "\n" + country;
         }
+
         return add;
     }
 
@@ -187,7 +192,7 @@ public class MapsActivity extends FragmentActivity {
 
                         progressDialog.dismiss();
 
-                        if(response!=null){
+                        if (response != null) {
                             drawPath(response);
                         }
 
@@ -207,7 +212,7 @@ public class MapsActivity extends FragmentActivity {
         AppController.getInstance().addToRequestQueue(req);
     }
 
-    public void drawPath(String  result) {
+    public void drawPath(String result) {
 
         try {
             //Tranform the string into a json object
@@ -218,16 +223,16 @@ public class MapsActivity extends FragmentActivity {
             String encodedString = overviewPolylines.getString("points");
             List<LatLng> list = decodePoly(encodedString);
             Polyline line = mMap.addPolyline(new PolylineOptions()
-                            .addAll(list)
-                            .width(12)
-                            .color(Color.parseColor("#05b1fb"))//Google maps blue color
-                            .geodesic(true)
+                    .addAll(list)
+                    .width(12)
+                    .color(Color.parseColor("#05b1fb"))//Google maps blue color
+                    .geodesic(true)
             );
-        }
-        catch (JSONException e) {
+        } catch (JSONException e) {
 
         }
     }
+
     private List<LatLng> decodePoly(String encoded) {
 
         List<LatLng> poly = new ArrayList<LatLng>();
@@ -254,11 +259,49 @@ public class MapsActivity extends FragmentActivity {
             int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
             lng += dlng;
 
-            LatLng p = new LatLng( (((double) lat / 1E5)),
-                    (((double) lng / 1E5) ));
+            LatLng p = new LatLng((((double) lat / 1E5)),
+                    (((double) lng / 1E5)));
             poly.add(p);
         }
 
         return poly;
+    }
+
+    @Override
+    public void onInfoWindowClick(final Marker marker) {
+
+
+        // TODO Auto-generated method stub
+        String title = marker.getTitle();
+
+        if (!title.equalsIgnoreCase("ME")) {
+            AlertDialog.Builder alert = new AlertDialog.Builder(MapsActivity.this);
+            alert.setTitle(title);
+
+            alert.setMessage("Do you Want see Direction");
+            alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+
+                    Uri gmmIntentUri = Uri.parse("google.navigation:q="
+                            + String.valueOf(marker.getPosition().latitude) + ","
+                            + String.valueOf(marker.getPosition().longitude));
+                    Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                    mapIntent.setPackage("com.google.android.apps.maps");
+                    startActivity(mapIntent);
+
+
+                }
+            });
+            alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+
+                }
+            });
+
+            alert.show();
+
+        }
+
+
     }
 }

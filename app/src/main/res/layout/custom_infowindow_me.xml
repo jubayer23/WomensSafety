@@ -3,10 +3,9 @@
     android:layout_width="110dp"
     android:layout_height="110dp"
     android:orientation="vertical"
-    android:background="#F5DEB3"
+    android:background="#88DE83"
     android:gravity="center"
     >
-
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -14,29 +13,31 @@
         >
 
 
+
         <TextView
-            android:id="@+id/victimtitle"
+            android:id="@+id/metitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Victim Title"
-            android:textColor="#FF00FF"
+            android:text="My Title"
+            android:divider="@drawable/list_divider"
+            android:textColor="#191970"
             android:padding="10dp"
             android:textStyle="bold"
             android:layout_centerHorizontal="true"
-            android:background="#00000000"
+
             />
 
 
         <TextView
-            android:id="@+id/victimInfo"
+            android:id="@+id/meInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/victimtitle"
-            android:text="Victim Info"
-            android:padding="10dp"
+            android:layout_below="@id/metitle"
+            android:text="My Info"
             android:textColor="#000"
+            android:padding="10dp"
             android:layout_centerHorizontal="true"
-            android:background="#00000000"
+
             />
 
     </RelativeLayout>

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">WomensSafety</string>
+    <string name="app_name">Safety</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_user_login">UserLoginActivity</string>
     <string name="title_activity_user_registration">UserRegistrationActivity</string>
