@@ -196,6 +196,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // Read saved registration id from shared preferences.
                 gcmRegId = saveData.getUserGcmRegId();
 
+                gps = new GPSTracker(this);
+
                 String lat = String.valueOf(gps.getLatitude());
 
                 String lng = String.valueOf(gps.getLongitude());
@@ -224,8 +226,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onResponse(String response) {
 
-                        Toast.makeText(getApplicationContext(), response,
-                                Toast.LENGTH_LONG).show();
+                        //Toast.makeText(getApplicationContext(), response,
+                          //      Toast.LENGTH_LONG).show();
 
 
 
