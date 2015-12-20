@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
@@ -45,8 +46,9 @@ public class MapsActivity extends FragmentActivity {
     private GoogleMap mMap;
     private double lattitude, langitude;
     private ProgressDialog progressDialog;
-    final int MY_LOCATION=1;
-    final int VICTIM_LOCATION=0;
+    final int MY_LOCATION = 1;
+    final int VICTIM_LOCATION = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +64,7 @@ public class MapsActivity extends FragmentActivity {
         if (extras.containsKey("lattitude") && extras.containsKey("langitude")) {
             lattitude = extras.getDouble("lattitude");
             langitude = extras.getDouble("langitude");
+
             setUpMapIfNeeded();
         } else {
             lattitude = 0;
@@ -69,8 +72,7 @@ public class MapsActivity extends FragmentActivity {
         }
     }
 
-    private void init()
-    {
+    private void init() {
 
     }
 
@@ -100,15 +102,17 @@ public class MapsActivity extends FragmentActivity {
 
 
     }
+
     private void setUpMarker(double desLat, final double desLang, double srcLat, double srcLang) {
+        int distance = getDistance(desLat, desLang, srcLat, srcLang);
 
         final Marker m1 = mMap.addMarker(new MarkerOptions().position(new LatLng(desLat, desLang)));
-        m1.setSnippet(getLocationDetails(desLat, desLang));
+        m1.setSnippet(getLocationDetails(desLat, desLang)+" \nDistance : "+distance+" meters");
         m1.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_victim));
         m1.setTitle("VICTIM");
 
         Marker m2 = mMap.addMarker(new MarkerOptions().position(new LatLng(srcLat, srcLang)));
-        m2.setSnippet(getLocationDetails(srcLat, srcLang));
+        m2.setSnippet(getLocationDetails(srcLat, srcLang)+" \nDistance : "+distance+" meters");
         m2.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_me));
         m2.setTitle("ME");
 
@@ -119,10 +123,8 @@ public class MapsActivity extends FragmentActivity {
             }
 
             public View getInfoContents(Marker marker) {
-                LatLng position = new LatLng(lattitude, langitude);
                 View v;
-                TextView tv_title,tv_info;
-
+                TextView tv_title, tv_info;
                 if (marker.equals(m1)) {
                     v = getLayoutInflater().inflate(R.layout.custom_infowindow, null);
                     tv_title = (TextView) v.findViewById(R.id.victimtitle);
@@ -141,9 +143,22 @@ public class MapsActivity extends FragmentActivity {
             }
         });
     }
+
+    private int getDistance(double desLat, double desLang, double srcLat, double srcLang) {
+        Location l1 = new Location("src");
+        l1.setLatitude(srcLat);
+        l1.setLongitude(srcLang);
+
+        Location l2 = new Location("des");
+        l2.setLatitude(desLat);
+        l2.setLongitude(desLang);
+
+        return Math.round(l1.distanceTo(l2));
+    }
+
     private String getLocationDetails(double lat, double lang) {
         Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-        String add="";
+        String add = "";
 
         List<Address> addresses = null;
         try {
@@ -159,12 +174,12 @@ public class MapsActivity extends FragmentActivity {
             String country = addresses.get(0).getCountryName();
 
             if (Thoroughfare != null && !Thoroughfare.isEmpty())
-                add += Thoroughfare+",";
+                add += Thoroughfare + ",";
             if (SubLocality != null && !SubLocality.isEmpty())
-                add += "\n(Around " + SubLocality+"),";
-            if (state != null && !state.isEmpty()) add += "\n" + state+",";
+                add += "\n(Around " + SubLocality + "),";
+            if (state != null && !state.isEmpty()) add += "\n" + state + ",";
             if (city != null && !city.isEmpty()) add += "\n" + city;
-            else if(country != null && !country.isEmpty()) add += "\n" + country;
+            else if (country != null && !country.isEmpty()) add += "\n" + country;
         }
 
         return add;
@@ -184,7 +199,7 @@ public class MapsActivity extends FragmentActivity {
 
                         progressDialog.dismiss();
 
-                        if(response!=null){
+                        if (response != null) {
                             drawPath(response);
                         }
 
@@ -204,7 +219,7 @@ public class MapsActivity extends FragmentActivity {
         AppController.getInstance().addToRequestQueue(req);
     }
 
-    public void drawPath(String  result) {
+    public void drawPath(String result) {
 
         try {
             //Tranform the string into a json object
@@ -220,11 +235,11 @@ public class MapsActivity extends FragmentActivity {
                             .color(Color.parseColor("#05b1fb"))//Google maps blue color
                             .geodesic(true)
             );
-        }
-        catch (JSONException e) {
+        } catch (JSONException e) {
 
         }
     }
+
     private List<LatLng> decodePoly(String encoded) {
 
         List<LatLng> poly = new ArrayList<LatLng>();
@@ -251,8 +266,8 @@ public class MapsActivity extends FragmentActivity {
             int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
             lng += dlng;
 
-            LatLng p = new LatLng( (((double) lat / 1E5)),
-                    (((double) lng / 1E5) ));
+            LatLng p = new LatLng((((double) lat / 1E5)),
+                    (((double) lng / 1E5)));
             poly.add(p);
         }
 
