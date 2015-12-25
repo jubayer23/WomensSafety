@@ -1,5 +1,6 @@
 package com.creative.womenssafety;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.VolleyError;
@@ -19,11 +21,16 @@ import com.creative.womenssafety.R;
 import com.creative.womenssafety.appdata.AppConstant;
 import com.creative.womenssafety.appdata.AppController;
 import com.creative.womenssafety.utils.GPSTracker;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -41,20 +48,22 @@ import java.util.Locale;
 /**
  * Created by Ikhtiar on 11/9/2015.
  */
-public class MapsActivity extends FragmentActivity {
+public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap;
     private double lattitude, langitude;
     private ProgressDialog progressDialog;
     final int MY_LOCATION = 1;
     final int VICTIM_LOCATION = 0;
+    private static final int PLACE_PICKER_REQUEST = 1;
+    private Marker m1, m2;
+    private GPSTracker gps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         onNewIntent(getIntent());
-        init();
     }
 
     @Override
@@ -64,22 +73,14 @@ public class MapsActivity extends FragmentActivity {
         if (extras.containsKey("lattitude") && extras.containsKey("langitude")) {
             lattitude = extras.getDouble("lattitude");
             langitude = extras.getDouble("langitude");
-
-            setUpMapIfNeeded();
+            try {
+                setUpMapIfNeeded();
+            } catch (Exception e) {
+            }
         } else {
             lattitude = 0;
             langitude = 0;
         }
-    }
-
-    private void init() {
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        setUpMapIfNeeded();
     }
 
     private void setUpMapIfNeeded() {
@@ -93,10 +94,11 @@ public class MapsActivity extends FragmentActivity {
     }
 
     private void setUpMap() {
-        GPSTracker gps = new GPSTracker(this);
+        gps = new GPSTracker(this);
         LatLng position = new LatLng(lattitude, langitude);
 
         setUpMarker(lattitude, langitude, gps.getLatitude(), gps.getLongitude());
+        mMap.setOnMarkerClickListener(this);
         sendRequestToServer(AppConstant.DirectionApiUrl(gps.getLatitude(), gps.getLongitude(), lattitude, langitude));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
 
@@ -104,44 +106,14 @@ public class MapsActivity extends FragmentActivity {
     }
 
     private void setUpMarker(double desLat, final double desLang, double srcLat, double srcLang) {
-        int distance = getDistance(desLat, desLang, srcLat, srcLang);
-
-        final Marker m1 = mMap.addMarker(new MarkerOptions().position(new LatLng(desLat, desLang)));
-        m1.setSnippet(getLocationDetails(desLat, desLang)+" \nDistance : "+distance+" meters");
+        m1 = mMap.addMarker(new MarkerOptions().position(new LatLng(desLat, desLang)));
         m1.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_victim));
         m1.setTitle("VICTIM");
 
-        Marker m2 = mMap.addMarker(new MarkerOptions().position(new LatLng(srcLat, srcLang)));
-        m2.setSnippet(getLocationDetails(srcLat, srcLang)+" \nDistance : "+distance+" meters");
+
+        m2 = mMap.addMarker(new MarkerOptions().position(new LatLng(srcLat, srcLang)));
         m2.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_me));
         m2.setTitle("ME");
-
-        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-
-            public View getInfoWindow(Marker marker) {
-                return null;
-            }
-
-            public View getInfoContents(Marker marker) {
-                View v;
-                TextView tv_title, tv_info;
-                if (marker.equals(m1)) {
-                    v = getLayoutInflater().inflate(R.layout.custom_infowindow, null);
-                    tv_title = (TextView) v.findViewById(R.id.victimtitle);
-                    tv_info = (TextView) v.findViewById(R.id.victimInfo);
-                    tv_title.setText(marker.getTitle());
-                    tv_info.setText(marker.getSnippet());
-                    return v;
-                } else {
-                    v = getLayoutInflater().inflate(R.layout.custom_infowindow_me, null);
-                    tv_title = (TextView) v.findViewById(R.id.metitle);
-                    tv_info = (TextView) v.findViewById(R.id.meInfo);
-                    tv_title.setText(marker.getTitle());
-                    tv_info.setText(marker.getSnippet());
-                    return v;
-                }
-            }
-        });
     }
 
     private int getDistance(double desLat, double desLang, double srcLat, double srcLang) {
@@ -273,4 +245,57 @@ public class MapsActivity extends FragmentActivity {
 
         return poly;
     }
+
+
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        if (marker.equals(m1)) {
+            openPicker(lattitude, langitude);
+        } else if (marker.equals(m2)) {
+            openPicker(gps.getLatitude(), gps.getLongitude());
+        }
+        return false;
+    }
+
+    private void openPicker(double lattitude, double langitude) {
+        PlacePicker.IntentBuilder intentBuilder;
+        Intent intent;
+
+        try {
+            intentBuilder = new PlacePicker.IntentBuilder();
+            intentBuilder.setLatLngBounds(new LatLngBounds(new LatLng(lattitude - .002, langitude - .002),
+                    new LatLng(lattitude + .002, langitude + .002)));
+
+            intent = intentBuilder.build(getApplicationContext());
+            startActivityForResult(intent, PLACE_PICKER_REQUEST);
+
+        } catch (GooglePlayServicesRepairableException e) {
+            e.printStackTrace();
+        } catch (GooglePlayServicesNotAvailableException e) {
+            e.printStackTrace();
+        }
+
+    }
+    @Override
+    protected void onActivityResult(int requestCode,
+                                    int resultCode, Intent data) {
+
+        if (requestCode == PLACE_PICKER_REQUEST
+                && resultCode == Activity.RESULT_OK) {
+            final Place place = PlacePicker.getPlace(data, this);
+            openPicker(place.getLatLng().latitude, place.getLatLng().longitude);
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try {
+            setUpMapIfNeeded();
+        } catch (Exception e) {
+        }
+    }
+
 }
