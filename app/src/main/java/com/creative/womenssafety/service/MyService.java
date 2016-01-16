@@ -62,24 +62,26 @@ public class MyService extends Service {
 
         if (!saveManager.getUserGcmRegId().equals("0") && saveManager.getIsLoggedIn()) {
 
-            Toast.makeText(this,"home btn logged in",Toast.LENGTH_SHORT);
+            Toast.makeText(this, "home btn logged in", Toast.LENGTH_SHORT);
             if (checkDeviceConfig.isConnectingToInternet()) {
+                String user_lat;
+                String user_lang;
                 //Log.d("DEBUG", "user connextion ok");
                 if (gps.canGetLocation()) {
-
                     //Log.d("DEBUG", "user gps ok");
-
-                    String user_lat = String.valueOf(gps.getLatitude());
-                    String user_lang = String.valueOf(gps.getLongitude());
-
-                    String URL = AppConstant.getUrlForHelpSend(saveManager.getUserGcmRegId(), user_lat, user_lang);
-
-                    Log.d("DEBUG_helpUrl", URL);
-
-                    Toast.makeText(this,"home btn press sucess",Toast.LENGTH_SHORT);
-
-                    hitUrl(URL);
+                    user_lat = String.valueOf(gps.getLatitude());
+                    user_lang = String.valueOf(gps.getLongitude());
+                } else {
+                    user_lat = String.valueOf(saveManager.getLat());
+                    user_lang = String.valueOf(saveManager.getLng());
                 }
+                String URL = AppConstant.getUrlForHelpSend(saveManager.getUserGcmRegId(), user_lat, user_lang,saveManager.getUserNotificationRange());
+
+                Log.d("DEBUG_helpUrl", URL);
+
+                Toast.makeText(this, "home btn press sucess", Toast.LENGTH_SHORT);
+
+                hitUrl(URL);
             }
         }
 

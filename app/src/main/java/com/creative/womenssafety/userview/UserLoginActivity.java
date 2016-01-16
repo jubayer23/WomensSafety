@@ -1,5 +1,6 @@
 package com.creative.womenssafety.userview;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -7,8 +8,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,17 +34,17 @@ import org.json.JSONObject;
 import java.io.IOException;
 
 public class UserLoginActivity extends AppCompatActivity {
+
+    public static Activity userLoginActivity;
+
     String userName;
     String password;
-    String loginType;
 
     Button loginB;
     EditText userNameEd, passwordEd;
-    TextView forgetPassTxt;
+    TextView registerUser;
     //SqliteDb theDb;
     ProgressDialog progressDialog;
-
-    CheckBox staySignCheckBox;
 
 
     CheckDeviceConfig cd;
@@ -58,11 +60,25 @@ public class UserLoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_login);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+
+        setContentView(R.layout.activity_user_login);
+       // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+
+
+        userLoginActivity = this;
 
         init();
+
+        if (saveManager.getIsLoggedIn()) {
+            Intent intent = new Intent(UserLoginActivity.this, MainActivity.class);
+
+            startActivity(intent);
+
+            finish();
+        }
 
 
         loginB.setOnClickListener(new View.OnClickListener() {
@@ -96,26 +112,14 @@ public class UserLoginActivity extends AppCompatActivity {
             }
         });
 
-        staySignCheckBox.setOnClickListener(new View.OnClickListener() {
+
+        registerUser.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-                if (((CheckBox) v).isChecked()) {
-
-                } else {
-
-                }
-            }
-        });
-
-        forgetPassTxt.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-                //Intent intent = new Intent(UserLoginActivity.this, ForgotPassActivity.class);
-                // startActivity(intent);
+                Intent signUpIntent = new Intent(UserLoginActivity.this, UserRegistrationActivity.class);
+                startActivity(signUpIntent);
             }
         });
     }
@@ -138,10 +142,7 @@ public class UserLoginActivity extends AppCompatActivity {
 
         passwordEd = (EditText) findViewById(R.id.pasword_ed);
 
-        forgetPassTxt = (TextView) findViewById(R.id.forgotPassTxt);
-
-
-        staySignCheckBox = (CheckBox) findViewById(R.id.stayLogIncheckBox);
+        registerUser = (TextView) findViewById(R.id.btn_signup);
 
         progressDialog = new ProgressDialog(UserLoginActivity.this);
         progressDialog.setIndeterminate(true);
@@ -151,15 +152,38 @@ public class UserLoginActivity extends AppCompatActivity {
 
     public boolean showWarningDialog() {
 
-        if (userNameEd.getText().toString().isEmpty()) {
-            AlertDialogForAnything.showAlertDialogWhenComplte(this, "Empty Field", "UserName Field Empty", false);
+        boolean valid = true;
 
-        } else if (passwordEd.getText().toString().isEmpty()) {
-            AlertDialogForAnything.showAlertDialogWhenComplte(this, "Empty Field", "PassWord Field Empty", false);
+        if (userNameEd.getText().toString().isEmpty() ) {
+            userNameEd.setError("Enter Username");
+            valid = false;
         } else {
-            return true;
+            userNameEd.setError(null);
         }
-        return false;
+
+        if (passwordEd.getText().toString().isEmpty()) {
+            passwordEd.setError("Enter Password");
+            valid = false;
+        } else {
+            passwordEd.setError(null);
+        }
+
+        if(!(userNameEd.getText().toString().isEmpty()&&passwordEd.getText().toString().isEmpty()))
+        {
+            if(userNameEd.getText().toString().isEmpty()&&!passwordEd.getText().toString().isEmpty())
+            {
+                userNameEd.requestFocus();
+            }
+            if(!userNameEd.getText().toString().isEmpty()&&passwordEd.getText().toString().isEmpty())
+            {
+                passwordEd.requestFocus();
+            }
+        }
+
+
+
+
+        return valid;
     }
 
     private class GCMRegistrationTask extends AsyncTask<Void, Void, String> {
@@ -257,6 +281,8 @@ public class UserLoginActivity extends AppCompatActivity {
             int status = response.getInt("success");
             Log.d("DEBUG_loginStatus", String.valueOf(status));
 
+            if(status == 1)saveManager.setUserId(response.getString("user_id"));
+
 
             if (progressDialog.isShowing()) progressDialog.dismiss();
 
@@ -285,7 +311,6 @@ public class UserLoginActivity extends AppCompatActivity {
 
             startActivity(intent);
 
-            LoginOrSingupActivity.loginOrSignUpActivity.finish();
 
             finish();
         } else {

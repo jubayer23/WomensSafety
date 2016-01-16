@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/back"
     android:orientation="vertical">
 
 
@@ -19,7 +20,8 @@
     <android.support.v4.widget.DrawerLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@+id/container_toolbar">
 
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
@@ -33,12 +35,20 @@
                 android:id="@+id/btnHelpMe"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/circle_background"
                 android:layout_centerInParent="true"
+                android:background="@drawable/help_btn_selector"
+                android:text="HELP"
                 android:textColor="@android:color/white"
-                android:textSize="22sp"
-                android:text="HELP" />
+                android:textSize="22sp" />
 
+            <ProgressBar
+                android:id="@+id/loadingProgressBar"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:visibility="invisible" />
 
         </RelativeLayout>
         <!-- The navigation drawer -->
@@ -53,4 +63,6 @@
             android:dividerHeight="1px"
             android:groupIndicator="@null" />
     </android.support.v4.widget.DrawerLayout>
-</LinearLayout>
+
+
+</RelativeLayout>

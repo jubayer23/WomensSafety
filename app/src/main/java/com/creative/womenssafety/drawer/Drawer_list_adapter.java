@@ -7,9 +7,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.creative.womenssafety.MainActivity;
 import com.creative.womenssafety.R;
+import com.creative.womenssafety.appdata.AppConstant;
 
 import java.util.HashMap;
 import java.util.List;
@@ -99,12 +103,52 @@ public class Drawer_list_adapter extends BaseExpandableListAdapter {
             convertView = infalInflater.inflate(R.layout.list_group, null);
         }
 
+        LinearLayout history_alert_layout = (LinearLayout) convertView.findViewById(R.id.drawer_item_layout);
+        TextView history_alert_amount = (TextView) convertView.findViewById(R.id.drawer_item_history_available);
+        ImageView drawer_item_icon = (ImageView) convertView.findViewById(R.id.drawer_item_icon);
+
+        drawer_item_icon.setImageResource(getResourceId(headerTitle));
+
+        if (AppConstant.NUM_OF_UNSEEN_HISTORY > 0 && headerTitle.equalsIgnoreCase(MainActivity.DRAWER_LIST_HISTORY)) {
+            history_alert_layout.setVisibility(View.VISIBLE);
+
+            history_alert_amount.setText(String.valueOf(AppConstant.NUM_OF_UNSEEN_HISTORY));
+        } else {
+            history_alert_layout.setVisibility(View.GONE);
+        }
+
         TextView lblListHeader = (TextView) convertView
                 .findViewById(R.id.drawer_item_text);
         lblListHeader.setTypeface(null, Typeface.BOLD);
         lblListHeader.setText(headerTitle);
 
         return convertView;
+    }
+
+    private int getResourceId(String headerTitle) {
+        if (headerTitle.equalsIgnoreCase(MainActivity.DRAWER_LIST_HISTORY)) {
+            return R.drawable.drawer_history;
+        }
+        if (headerTitle.equalsIgnoreCase(MainActivity.DRAWER_LIST_HOSPITAL)) {
+            return R.drawable.drawer_history;
+        }
+        if (headerTitle.equalsIgnoreCase(MainActivity.DRAWER_LIST_INFORMATION)) {
+            return R.drawable.drawer_information;
+        }
+        if (headerTitle.equalsIgnoreCase(MainActivity.DRAWER_LIST_LOGOUT)) {
+            return R.drawable.drawer_logout;
+        }
+        if (headerTitle.equalsIgnoreCase(MainActivity.DRAWER_LIST_MANAGE_SMS)) {
+            return R.drawable.drawer_sms;
+        }
+        if (headerTitle.equalsIgnoreCase(MainActivity.DRAWER_LIST_TUTORIAL)) {
+            return R.drawable.drawer_howtouse;
+        }
+        if (headerTitle.equalsIgnoreCase(MainActivity.DRAWER_LIST_SETTING)) {
+            return R.drawable.drawer_setting;
+        }
+
+        return R.drawable.drawer_man;
     }
 
     @Override
@@ -127,8 +171,7 @@ public class Drawer_list_adapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public boolean isChildSelectable(int groupPosition, int childPosition)
-    {
-            return true;
+    public boolean isChildSelectable(int groupPosition, int childPosition) {
+        return true;
     }
 }

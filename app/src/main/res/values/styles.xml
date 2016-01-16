@@ -11,6 +11,8 @@
         <!--<item name="colorPrimary">#ad1457</item>-->
         <!--<item name="colorPrimaryDark">#880e4f</item>-->
         <!--<item name="colorAccent">#e91e63</item>-->
+
+        <!-- Customize your theme here. -->
     </style>
 
     <!-- Base application theme. -->
@@ -21,14 +23,36 @@
         <!--<item name="colorAccent">@color/colorAccent</item>-->
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
-        <item name="colorPrimary">#ad1457</item>
-        <item name="colorPrimaryDark">#880e4f</item>
-        <item name="colorAccent">#e91e63</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">
+
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+        <!-- Customize your theme here. -->
+        <item name="colorControlNormal">@color/blue_dark</item>
+        <item name="colorControlActivated">@color/blue</item>
+        <item name="colorControlHighlight">@color/green_light</item>
+        <item name="android:textColorHint">@color/black</item>
+        <item name="android:textColorHintInverse">@color/blue_light</item>
+
     </style>
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+
+
+        <!-- Customize your theme here. -->
+        <item name="colorControlNormal">@color/blue_dark</item>
+        <item name="colorControlActivated">@color/blue</item>
+        <item name="colorControlHighlight">@color/green_light</item>
+        <item name="android:textColorHint">@color/green</item>
+        <item name="android:textColorHintInverse">@color/blue_light</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

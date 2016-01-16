@@ -10,6 +10,7 @@ import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -20,6 +21,8 @@ import com.android.volley.toolbox.StringRequest;
 import com.creative.womenssafety.R;
 import com.creative.womenssafety.appdata.AppConstant;
 import com.creative.womenssafety.appdata.AppController;
+import com.creative.womenssafety.sharedprefs.SaveManager;
+import com.creative.womenssafety.utils.CheckDeviceConfig;
 import com.creative.womenssafety.utils.GPSTracker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -47,14 +50,18 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnInfoWi
 
     private GoogleMap mMap;
     private double lattitude, langitude;
+    private int event_id;
     private ProgressDialog progressDialog;
-    final int MY_LOCATION = 1;
-    final int VICTIM_LOCATION = 0;
+    private GPSTracker gps;
+    private SaveManager saveManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        saveManager = new SaveManager(this);
+
         onNewIntent(getIntent());
         init();
     }
@@ -66,10 +73,12 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnInfoWi
         if (extras.containsKey("lattitude") && extras.containsKey("langitude")) {
             lattitude = extras.getDouble("lattitude");
             langitude = extras.getDouble("langitude");
-            setUpMapIfNeeded();
+            event_id = extras.getInt("event_id");
+           // setUpMapIfNeeded();
         } else {
             lattitude = 0;
             langitude = 0;
+            event_id = 1;
         }
     }
 
@@ -80,7 +89,20 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnInfoWi
     @Override
     protected void onResume() {
         super.onResume();
-        setUpMapIfNeeded();
+
+        gps = new GPSTracker(this);
+
+
+
+        if (gps.canGetLocation()) {
+
+            saveManager.setLat(String.valueOf(gps.getLatitude()));
+            saveManager.setLng(String.valueOf(gps.getLongitude()));
+
+            setUpMapIfNeeded();
+        } else {
+            showGPSDisabledAlertToUser();
+        }
     }
 
     private void setUpMapIfNeeded() {
@@ -91,14 +113,38 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnInfoWi
                 setUpMap();
             }
         }
+
+    }
+
+    private void showGPSDisabledAlertToUser() {
+        AlertDialog.Builder localBuilder = new AlertDialog.Builder(this);
+        localBuilder.setMessage("Turn ON your GPS to get better RESULTS.").setCancelable(false).setPositiveButton("Enable GPS", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface paramAnonymousDialogInterface, int paramAnonymousInt) {
+                Intent localIntent = new Intent("android.settings.LOCATION_SOURCE_SETTINGS");
+                MapsActivity.this.startActivity(localIntent);
+            }
+        });
+        localBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface paramAnonymousDialogInterface, int paramAnonymousInt) {
+                paramAnonymousDialogInterface.cancel();
+            }
+        });
+        localBuilder.create().show();
     }
 
     private void setUpMap() {
-        GPSTracker gps = new GPSTracker(this);
+
         LatLng position = new LatLng(lattitude, langitude);
 
-        setUpMarker(lattitude, langitude, gps.getLatitude(), gps.getLongitude());
-        sendRequestToServer(AppConstant.DirectionApiUrl(gps.getLatitude(), gps.getLongitude(), lattitude, langitude));
+        if (gps.canGetLocation()) {
+
+            setUpMarker(lattitude, langitude, saveManager.getLat(), saveManager.getLng());
+        } else {
+            setUpMarker(lattitude, langitude, saveManager.getLat(), saveManager.getLng());
+        }
+
+
+        sendRequestToServer(AppConstant.DirectionApiUrl(saveManager.getLat(), saveManager.getLng(), lattitude, langitude));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
 
 
@@ -160,19 +206,27 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnInfoWi
             e.printStackTrace();
         }
         if (addresses != null) {
-            String city = addresses.get(0).getLocality();
-            String state = addresses.get(0).getAdminArea();
-            String SubLocality = addresses.get(0).getSubLocality();
-            String Thoroughfare = addresses.get(0).getThoroughfare();
-            String country = addresses.get(0).getCountryName();
 
-            if (Thoroughfare != null && !Thoroughfare.isEmpty())
-                add += Thoroughfare + ",";
-            if (SubLocality != null && !SubLocality.isEmpty())
-                add += "\n(Around " + SubLocality + "),";
-            if (state != null && !state.isEmpty()) add += "\n" + state + ",";
-            if (city != null && !city.isEmpty()) add += "\n" + city;
-            else if (country != null && !country.isEmpty()) add += "\n" + country;
+            try{
+                String city = addresses.get(0).getLocality();
+                String state = addresses.get(0).getAdminArea();
+                String SubLocality = addresses.get(0).getSubLocality();
+                String Thoroughfare = addresses.get(0).getThoroughfare();
+                String country = addresses.get(0).getCountryName();
+
+                if (Thoroughfare != null && !Thoroughfare.isEmpty())
+                    add += Thoroughfare + ",";
+                if (SubLocality != null && !SubLocality.isEmpty())
+                    add += "\n(Around " + SubLocality + "),";
+                if (state != null && !state.isEmpty()) add += "\n" + state + ",";
+                if (city != null && !city.isEmpty()) add += "\n" + city;
+                else if (country != null && !country.isEmpty()) add += "\n" + country;
+            }catch (Exception e)
+            {
+
+            }
+
+
         }
 
         return add;
@@ -190,10 +244,38 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnInfoWi
                     @Override
                     public void onResponse(String response) {
 
-                        progressDialog.dismiss();
 
                         if (response != null) {
                             drawPath(response);
+
+                            sendRequestToServerForSetHistoryIsSeen(AppConstant.getUrlForSetHistorySeenUnseen(saveManager.getUserId(),String.valueOf(event_id)));
+                        }
+
+
+                    }
+                }, new com.android.volley.Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                if (progressDialog.isShowing()) progressDialog.dismiss();
+
+
+            }
+        });
+        // req.setRetryPolicy(new DefaultRetryPolicy(Constants.MY_SOCKET_TIMEOUT_MS,
+        //        DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        AppController.getInstance().addToRequestQueue(req);
+    }
+    public void sendRequestToServerForSetHistoryIsSeen(String url) {
+
+        StringRequest req = new StringRequest(Request.Method.GET, url,
+                new com.android.volley.Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        progressDialog.dismiss();
+
+                        if (response != null) {
                         }
 
 
