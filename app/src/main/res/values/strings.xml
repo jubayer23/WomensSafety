@@ -1,5 +1,7 @@
 <resources>
-    <string name="app_name">Safety</string>
+    <string name="app_name">Be Safe</string>
+    <string name="activity_police_info">PoliceInfo</string>
+    <string name="activity_history_list">Help History</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_user_login">UserLoginActivity</string>
     <string name="title_activity_user_registration">UserRegistrationActivity</string>

@@ -1,5 +1,7 @@
 package com.creative.womenssafety;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
@@ -14,6 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ExpandableListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -21,16 +25,28 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.creative.womenssafety.UserSettingView.ManageSmsList;
+import com.creative.womenssafety.UserSettingView.UserSettingActivity;
+import com.creative.womenssafety.alertbanner.AlertDialogForAnything;
 import com.creative.womenssafety.appdata.AppConstant;
 import com.creative.womenssafety.appdata.AppController;
 import com.creative.womenssafety.drawer.Drawer_list_adapter;
+import com.creative.womenssafety.model.History;
 import com.creative.womenssafety.service.LockScreenService;
 import com.creative.womenssafety.sharedprefs.SaveManager;
-import com.creative.womenssafety.userview.LoginOrSingupActivity;
+import com.creative.womenssafety.userInfoView.HistoryList;
+import com.creative.womenssafety.userInfoView.PoliceInfo;
+import com.creative.womenssafety.userview.UserLoginActivity;
 import com.creative.womenssafety.utils.CheckDeviceConfig;
 import com.creative.womenssafety.utils.GPSTracker;
+import com.google.gson.Gson;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -38,8 +54,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private CheckDeviceConfig checkDeviceConfig;
-
-
 
 
     private SaveManager saveData;
@@ -60,6 +74,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     GPSTracker gps;
 
+    public static final String DRAWER_LIST_HISTORY = "History";
+    public static final String DRAWER_LIST_MANAGE_SMS = "Manage Sms List";
+    public static final String DRAWER_LIST_TUTORIAL = "How To Use";
+    public static final String DRAWER_LIST_LOGOUT = "Logout";
+    public static final String DRAWER_LIST_SETTING = "Setting";
+    public static final String DRAWER_LIST_INFORMATION = "Information";
+    public static final String DRAWER_LIST_HOSPITAL = "Hospital";
+    public static final String DRAWER_LIST_POLICE = "Police";
+    public static final String DRAWER_LIST_HEATMAP = "Heat Map";
+
+    private ProgressBar progressBar;
+    Gson gson;
+
+    private static boolean FLAG_ACTIVITY_RESUME = true;
+
     //private  checkDeviceConfig
 
     @Override
@@ -67,17 +96,77 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        checkDeviceConfig = new CheckDeviceConfig(this);
+        FLAG_ACTIVITY_RESUME = false;
 
+
+        progressBar = (ProgressBar) findViewById(R.id.loadingProgressBar);
+        checkDeviceConfig = new CheckDeviceConfig(getApplicationContext());
         saveData = new SaveManager(this);
+        gson = new Gson();
 
-        gps = new GPSTracker(this);
+        if (!checkDeviceConfig.isGoogelPlayInstalled()) {
+            //Internet Connection is not present
+            AlertDialogForAnything.showAlertDialogWhenComplte(MainActivity.this, "Google Play Services",
+                    "No google play services!!!Please Install google play services", false);
+
+            return;
+            //stop executing code by return
+        }
+
 
         // start service for observing intents
         startService(new Intent(this, LockScreenService.class));
 
 
         init();
+
+        if (checkDeviceConfig.isConnectingToInternet()) {
+            //showing progressBar
+            showOrHideProgressBar();
+            sendRequestToServerForHistoryFetch(AppConstant.getUrlForHistoryList(saveData.getUserId(), saveData.getLat(), saveData.getLng(), saveData.getUserNotificationRange()));
+        } else {
+            //Internet Connection is not present
+            AlertDialogForAnything.showAlertDialogWhenComplte(MainActivity.this, "Internet Connection Error",
+                    "Please connect to working Internet connection", false);
+        }
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+
+        // creating GPS Class object
+        gps = new GPSTracker(this);
+
+
+        if (!checkDeviceConfig.isConnectingToInternet()) {
+            //Internet Connection is not present
+            AlertDialogForAnything.showAlertDialogWhenComplte(MainActivity.this, "Internet Connection Error",
+                    "Please connect to working Internet connection", false);
+            //stop executing code by return
+            return;
+        }
+        if (!gps.canGetLocation()) {
+            showGPSDisabledAlertToUser();
+
+            return;
+        }
+        if (!checkDeviceConfig.isGoogelPlayInstalled()) {
+            //Internet Connection is not present
+            AlertDialogForAnything.showAlertDialogWhenComplte(MainActivity.this, "Google Play Services",
+                    "No google play services!!!Please Install google play services", false);
+
+            return;
+            //stop executing code by return
+        }
+
+        if (gps.canGetLocation() && checkDeviceConfig.isConnectingToInternet()) {
+            saveData.setLat(String.valueOf(gps.getLatitude()));
+            saveData.setLng(String.valueOf(gps.getLongitude()));
+        }
 
 
     }
@@ -106,43 +195,62 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 super.onDrawerClosed(view);
                 getSupportActionBar().setHomeAsUpIndicator(R.drawable.nav_icon_inactive);
             }
+
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 getSupportActionBar().setHomeAsUpIndicator(R.drawable.nav_icon_active);
+                if (checkDeviceConfig.isConnectingToInternet()) {
+                    //showing progressBar
+                    showOrHideProgressBar();
+                    sendRequestToServerForHistoryFetch(AppConstant.getUrlForHistoryList(saveData.getUserId(), saveData.getLat(), saveData.getLng(), saveData.getUserNotificationRange()));
+                }
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         setDrawer();
     }
+
     private void prepareListData() {
         listDataHeader = new ArrayList<String>();
         listDataChild = new HashMap<String, List<String>>();
 
         // Adding child data
 
-        listDataHeader.add("MANAGE SMS LIST");
-        listDataHeader.add("INFORMATION");
-        listDataHeader.add("HOW TO USE");
-        listDataHeader.add("LOGOUT");
+        listDataHeader.add(DRAWER_LIST_HISTORY);
+        listDataHeader.add(DRAWER_LIST_MANAGE_SMS);
+        listDataHeader.add(DRAWER_LIST_INFORMATION);
+        listDataHeader.add(DRAWER_LIST_HEATMAP);
+        listDataHeader.add(DRAWER_LIST_TUTORIAL);
+        listDataHeader.add(DRAWER_LIST_SETTING);
+        listDataHeader.add(DRAWER_LIST_LOGOUT);
+
         // Adding child data
         List<String> info = new ArrayList<String>();
-        info.add("HOSPITAL");
-        info.add("POLICE");
-        info.add("FIRE SERVICE");
+        info.add(DRAWER_LIST_HOSPITAL);
+        info.add(DRAWER_LIST_POLICE);
 
 
-        listDataChild.put(listDataHeader.get(1), info); // Header, Child data
+        listDataChild.put(listDataHeader.get(2), info); // Header, Child data
 //        listDataChild.put(listDataHeader.get(1), others);
     }
-    protected void setDrawer(){
+
+    protected void setDrawer() {
         prepareListData();
         drawer_list = (ExpandableListView) findViewById(R.id.left_drawer);
         LayoutInflater inflater = getLayoutInflater();
         ViewGroup header = (ViewGroup) inflater.inflate(R.layout.drawer_list_header, drawer_list, false);
 
 
-        drawer_adapter_custom = new Drawer_list_adapter(this,listDataHeader,listDataChild);
+        TextView header2 = (TextView) header.findViewById(R.id.list_header);
+        TextView header3 = (TextView) header.findViewById(R.id.list_header_2);
+
+
+        header2.setText(saveData.getUserName());
+        header3.setText(saveData.getUserEmail());
+
+
+        drawer_adapter_custom = new Drawer_list_adapter(this, listDataHeader, listDataChild);
         drawer_list.addHeaderView(header, null, false);
         drawer_list.setAdapter(drawer_adapter_custom);
 
@@ -150,34 +258,52 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
-                Toast.makeText(
-                        getApplicationContext(),
-                        listDataHeader.get(groupPosition)
-                                + " : "
-                                + listDataChild.get(
-                                listDataHeader.get(groupPosition)).get(
-                                childPosition), Toast.LENGTH_SHORT)
-                        .show();
+
+                if (FLAG_ACTIVITY_RESUME) {
+                    if (listDataChild.get(
+                            listDataHeader.get(groupPosition)).get(
+                            childPosition).contains(DRAWER_LIST_POLICE)) {
+
+                        Intent intent = new Intent(MainActivity.this, PoliceInfo.class);
+                        startActivity(intent);
+
+                    }
+                }
+
+
                 return false;
             }
         });
         drawer_list.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
             @Override
             public boolean onGroupClick(ExpandableListView expandableListView, View view, int i, long l) {
-
-                if (listDataHeader.get(i).contains("MANAGE SMS LIST")) {
-                    Intent intent = new Intent(MainActivity.this, ManageSmsList.class);
-                    startActivity(intent);
+                if (FLAG_ACTIVITY_RESUME) {
+                    if (listDataHeader.get(i).contains(DRAWER_LIST_MANAGE_SMS)) {
+                        Intent intent = new Intent(MainActivity.this, ManageSmsList.class);
+                        startActivity(intent);
+                    }
+                    if (listDataHeader.get(i).contains(DRAWER_LIST_LOGOUT)) {
+                        saveData.setIsLoggedIn(false);
+                        Intent home = new Intent(MainActivity.this, UserLoginActivity.class);
+                        startActivity(home);
+                        finish();
+                    }
+                    if (listDataHeader.get(i).contains(DRAWER_LIST_HISTORY)) {
+                        Intent intent = new Intent(MainActivity.this, HistoryList.class);
+                        startActivity(intent);
+                    }
+                    if (listDataHeader.get(i).contains(DRAWER_LIST_SETTING)) {
+                        Intent intent = new Intent(MainActivity.this, UserSettingActivity.class);
+                        startActivity(intent);
+                    }
+                    if (listDataHeader.get(i).contains(DRAWER_LIST_HEATMAP)) {
+                        Intent intent = new Intent(MainActivity.this, HeatMapActivity.class);
+                        startActivity(intent);
+                    }
                 }
-                if (listDataHeader.get(i).contains("LOGOUT")) {
-                    saveData.setIsLoggedIn(false);
-                    Intent home = new Intent(MainActivity.this, LoginOrSingupActivity.class);
-                    startActivity(home);
-                    finish();
-                }
 
 
-                Toast.makeText(getApplicationContext(), "" + listDataHeader.get(i), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "" + listDataHeader.get(i), Toast.LENGTH_SHORT).show();
                 return false;
             }
         });
@@ -190,32 +316,48 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         int id = v.getId();
 
-        if (id == R.id.btnHelpMe) {
-            if (checkDeviceConfig.isGoogelPlayInstalled() && checkDeviceConfig.isConnectingToInternet()) {
+        if (FLAG_ACTIVITY_RESUME) {
+            if (id == R.id.btnHelpMe) {
 
-                // Read saved registration id from shared preferences.
-                gcmRegId = saveData.getUserGcmRegId();
+                FLAG_ACTIVITY_RESUME = false;
 
-                gps = new GPSTracker(this);
-
-                String lat = String.valueOf(gps.getLatitude());
-
-                String lng = String.valueOf(gps.getLongitude());
+                if (checkDeviceConfig.isGoogelPlayInstalled() && checkDeviceConfig.isConnectingToInternet()) {
 
 
-                this.sendBroadcast(new Intent("com.google.android.intent.action.GTALK_HEARTBEAT"));
-                this.sendBroadcast(new Intent("com.google.android.intent.action.MCS_HEARTBEAT"));
+                    // Read saved registration id from shared preferences.
+                    gcmRegId = saveData.getUserGcmRegId();
 
-                sendRequestToServer(AppConstant.getUrlForHelpSend(gcmRegId, lat, lng));
-                sendSMStoFriendList();
+                    gps = new GPSTracker(this);
 
-            } else {
+                    String lat;
+                    String lng;
+                    if (gps.canGetLocation()) {
+                        lat = String.valueOf(gps.getLatitude());
 
-                sendSMStoFriendList();
+                        lng = String.valueOf(gps.getLongitude());
+                    } else {
+                        lat = String.valueOf(saveData.getLat());
+
+                        lng = String.valueOf(saveData.getLng());
+                    }
 
 
+                    this.sendBroadcast(new Intent("com.google.android.intent.action.GTALK_HEARTBEAT"));
+                    this.sendBroadcast(new Intent("com.google.android.intent.action.MCS_HEARTBEAT"));
+
+                    sendRequestToServer(AppConstant.getUrlForHelpSend(gcmRegId, lat, lng, saveData.getUserNotificationRange()));
+                    sendSMStoFriendList();
+
+                } else {
+
+                    sendSMStoFriendList();
+
+
+                }
             }
         }
+
+
     }
 
 
@@ -226,9 +368,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onResponse(String response) {
 
-                        //Toast.makeText(getApplicationContext(), response,
-                          //      Toast.LENGTH_LONG).show();
+                        FLAG_ACTIVITY_RESUME = true;
 
+                        Toast.makeText(getApplicationContext(), "SEND",
+                                Toast.LENGTH_LONG).show();
 
 
                     }
@@ -244,13 +387,63 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    public void sendRequestToServerForHistoryFetch(String sentUrl) {
+
+        Log.d("DEBUG_history_url",sentUrl);
+
+        StringRequest req = new StringRequest(Request.Method.GET, sentUrl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        try {
+                            JSONArray jsonArray = new JSONArray(response);
+
+
+                            AppConstant.histories.clear();
+                            AppConstant.NUM_OF_UNSEEN_HISTORY = 0;
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject tempObject = jsonArray.getJSONObject(i);
+
+                                History history = gson.fromJson(tempObject.toString(), History.class);
+                                if (history.getSeen().equalsIgnoreCase("false"))
+                                    AppConstant.NUM_OF_UNSEEN_HISTORY++;
+
+                                AppConstant.histories.add(history);
+
+                            }
+
+                            //Collections.reverse(AppConstant.histories);
+
+                            drawer_adapter_custom.notifyDataSetChanged();
+
+                            showOrHideProgressBar();
+
+                            FLAG_ACTIVITY_RESUME = true;
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                showOrHideProgressBar();
+            }
+        });
+
+        AppController.getInstance().addToRequestQueue(req);
+
+    }
+
     public void sendSMStoFriendList() {
         ArrayList<String> phoneList = saveData.getPhoneNumberArray();
 
         for (String phoneNo : phoneList) {
             //String phoneNo = textPhoneNo.getText().toString();
-            Log.d("DEBUG_phone",phoneNo);
-            Log.d("DEBUG_phone2","no");
+            Log.d("DEBUG_phone", phoneNo);
+            Log.d("DEBUG_phone2", "no");
             String sms = "HELP ME";
             try {
                 SmsManager smsManager = SmsManager.getDefault();
@@ -264,14 +457,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 e.printStackTrace();
             }
         }
+
+        FLAG_ACTIVITY_RESUME = true;
     }
 
-    public void LogOut(View view) {
-        saveData.setIsLoggedIn(false);
-        Intent home = new Intent(MainActivity.this, LoginOrSingupActivity.class);
-        startActivity(home);
-        finish();
-    }
 
     public void sMs(View view) {
 
@@ -285,6 +474,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
         //unregisterReceiver(mScreenStateReceiver);
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Pass the event to ActionBarDrawerToggle, if it returns
@@ -295,6 +485,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Handle your other action bar items...
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showGPSDisabledAlertToUser() {
+        AlertDialog.Builder localBuilder = new AlertDialog.Builder(this);
+        localBuilder.setMessage("Turn ON your GPS to get better RESULTS.").setCancelable(false).setPositiveButton("Enable GPS", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface paramAnonymousDialogInterface, int paramAnonymousInt) {
+                Intent localIntent = new Intent("android.settings.LOCATION_SOURCE_SETTINGS");
+                MainActivity.this.startActivity(localIntent);
+            }
+        });
+        localBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface paramAnonymousDialogInterface, int paramAnonymousInt) {
+                paramAnonymousDialogInterface.cancel();
+            }
+        });
+        localBuilder.create().show();
+    }
+
+    private void showOrHideProgressBar() {
+        if (progressBar.getVisibility() == View.VISIBLE) {
+            progressBar.setVisibility(View.INVISIBLE);
+        } else
+            progressBar.setVisibility(View.VISIBLE);
     }
 }
 
