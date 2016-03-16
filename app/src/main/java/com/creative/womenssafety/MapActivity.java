@@ -1,34 +1,34 @@
 package com.creative.womenssafety;
 
-import android.app.AlertDialog;
+import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-
-import com.creative.womenssafety.R;
+import com.creative.womenssafety.Map.BaseMapActivity;
 import com.creative.womenssafety.appdata.AppConstant;
 import com.creative.womenssafety.appdata.AppController;
-import com.creative.womenssafety.sharedprefs.SaveManager;
-import com.creative.womenssafety.utils.CheckDeviceConfig;
-import com.creative.womenssafety.utils.GPSTracker;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -44,27 +44,15 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Created by Ikhtiar on 11/9/2015.
+ * Created by comsol on 17-Jan-16.
  */
-public class MapsActivity extends FragmentActivity implements GoogleMap.OnInfoWindowClickListener {
+public class MapActivity extends BaseMapActivity implements GoogleMap.OnInfoWindowClickListener {
 
-    private GoogleMap mMap;
     private double lattitude, langitude;
     private int event_id;
     private ProgressDialog progressDialog;
-    private GPSTracker gps;
-    private SaveManager saveManager;
+    private static final int PLACE_PICKER_REQUEST = 1;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
-
-        saveManager = new SaveManager(this);
-
-        onNewIntent(getIntent());
-        init();
-    }
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -74,96 +62,53 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnInfoWi
             lattitude = extras.getDouble("lattitude");
             langitude = extras.getDouble("langitude");
             event_id = extras.getInt("event_id");
-           // setUpMapIfNeeded();
+            Log.d("DEBUG_inInternt","Yes");
+            // setUpMapIfNeeded();
         } else {
-            lattitude = 0;
-            langitude = 0;
-            event_id = 1;
+            Log.d("DEBUG_inInternt","No");
+            lattitude = 24.913596;
+            langitude = 91.90391;
+            event_id = 757;
         }
-    }
-
-    private void init() {
-
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void initMapSettings() {
+        mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
 
-        gps = new GPSTracker(this);
-
-
-
-        if (gps.canGetLocation()) {
-
-            saveManager.setLat(String.valueOf(gps.getLatitude()));
-            saveManager.setLng(String.valueOf(gps.getLongitude()));
-
-            setUpMapIfNeeded();
-        } else {
-            showGPSDisabledAlertToUser();
-        }
-    }
-
-    private void setUpMapIfNeeded() {
-        if (mMap == null) {
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
-                    .getMap();
-            if (mMap != null) {
-                setUpMap();
-            }
-        }
-
-    }
-
-    private void showGPSDisabledAlertToUser() {
-        AlertDialog.Builder localBuilder = new AlertDialog.Builder(this);
-        localBuilder.setMessage("Turn ON your GPS to get better RESULTS.").setCancelable(false).setPositiveButton("Enable GPS", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface paramAnonymousDialogInterface, int paramAnonymousInt) {
-                Intent localIntent = new Intent("android.settings.LOCATION_SOURCE_SETTINGS");
-                MapsActivity.this.startActivity(localIntent);
-            }
-        });
-        localBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface paramAnonymousDialogInterface, int paramAnonymousInt) {
-                paramAnonymousDialogInterface.cancel();
-            }
-        });
-        localBuilder.create().show();
-    }
-
-    private void setUpMap() {
 
         LatLng position = new LatLng(lattitude, langitude);
 
         if (gps.canGetLocation()) {
 
-            setUpMarker(lattitude, langitude, saveManager.getLat(), saveManager.getLng());
+            setUpMarker(lattitude, langitude, gps.getLatitude(), gps.getLongitude());
+
+            sendRequestToServer(AppConstant.DirectionApiUrl(gps.getLatitude(), gps.getLongitude(), lattitude, langitude));
         } else {
-            setUpMarker(lattitude, langitude, saveManager.getLat(), saveManager.getLng());
+            setUpMarkerOnlyVictim(lattitude, langitude);
+
+            sendRequestToServerForSetHistoryIsSeen(AppConstant.getUrlForSetHistorySeenUnseen(saveManager.getUserId(), String.valueOf(event_id)));
         }
 
 
-        sendRequestToServer(AppConstant.DirectionApiUrl(saveManager.getLat(), saveManager.getLng(), lattitude, langitude));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
 
-
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
     }
 
     private void setUpMarker(double desLat, final double desLang, double srcLat, double srcLang) {
 
-        final Marker m1 = mMap.addMarker(new MarkerOptions().position(new LatLng(desLat, desLang)));
+        final Marker m1 = mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(desLat, desLang)));
         m1.setSnippet(getLocationDetails(desLat, desLang));
         m1.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_victim));
         m1.setTitle("VICTIM");
 
 
-        Marker m2 = mMap.addMarker(new MarkerOptions().position(new LatLng(srcLat, srcLang)));
+        Marker m2 = mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(srcLat, srcLang)));
         m2.setSnippet(getLocationDetails(srcLat, srcLang));
         m2.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_me));
         m2.setTitle("ME");
 
-        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+        mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
 
             public View getInfoWindow(Marker marker) {
                 return null;
@@ -192,7 +137,42 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnInfoWi
             }
         });
 
-        mMap.setOnInfoWindowClickListener(this);
+        mGoogleMap.setOnInfoWindowClickListener(this);
+        //mGoogleMap.setOnMarkerClickListener(this);
+    }
+
+    private void setUpMarkerOnlyVictim(double desLat, final double desLang) {
+
+        final Marker m1 = mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(desLat, desLang)));
+        m1.setSnippet(getLocationDetails(desLat, desLang));
+        m1.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_victim));
+        m1.setTitle("VICTIM");
+
+
+        mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+            public View getInfoWindow(Marker marker) {
+                return null;
+            }
+
+            public View getInfoContents(Marker marker) {
+                LatLng position = new LatLng(lattitude, langitude);
+                View v;
+                TextView tv_title, tv_info;
+
+
+                v = getLayoutInflater().inflate(R.layout.custom_infowindow, null);
+                tv_title = (TextView) v.findViewById(R.id.victimtitle);
+                tv_info = (TextView) v.findViewById(R.id.victimInfo);
+                tv_title.setText(marker.getTitle());
+                tv_info.setText(marker.getSnippet());
+                return v;
+
+            }
+        });
+
+        mGoogleMap.setOnInfoWindowClickListener(this);
+        //mGoogleMap.setOnMarkerClickListener(this);
     }
 
     private String getLocationDetails(double lat, double lang) {
@@ -207,7 +187,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnInfoWi
         }
         if (addresses != null) {
 
-            try{
+            try {
                 String city = addresses.get(0).getLocality();
                 String state = addresses.get(0).getAdminArea();
                 String SubLocality = addresses.get(0).getSubLocality();
@@ -221,8 +201,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnInfoWi
                 if (state != null && !state.isEmpty()) add += "\n" + state + ",";
                 if (city != null && !city.isEmpty()) add += "\n" + city;
                 else if (country != null && !country.isEmpty()) add += "\n" + country;
-            }catch (Exception e)
-            {
+            } catch (Exception e) {
 
             }
 
@@ -234,7 +213,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnInfoWi
 
 
     public void sendRequestToServer(String url) {
-        progressDialog = new ProgressDialog(MapsActivity.this);
+        progressDialog = new ProgressDialog(MapActivity.this);
         progressDialog.setMessage("Fetching route, Please wait...");
         progressDialog.setIndeterminate(true);
         progressDialog.show();
@@ -248,7 +227,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnInfoWi
                         if (response != null) {
                             drawPath(response);
 
-                            sendRequestToServerForSetHistoryIsSeen(AppConstant.getUrlForSetHistorySeenUnseen(saveManager.getUserId(),String.valueOf(event_id)));
+                            sendRequestToServerForSetHistoryIsSeen(AppConstant.getUrlForSetHistorySeenUnseen(saveManager.getUserId(), String.valueOf(event_id)));
                         }
 
 
@@ -266,7 +245,15 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnInfoWi
 
         AppController.getInstance().addToRequestQueue(req);
     }
+
     public void sendRequestToServerForSetHistoryIsSeen(String url) {
+
+        if(progressDialog ==  null){
+            progressDialog = new ProgressDialog(MapActivity.this);
+            progressDialog.setMessage("Please wait...");
+            progressDialog.setIndeterminate(true);
+            progressDialog.show();
+        }
 
         StringRequest req = new StringRequest(Request.Method.GET, url,
                 new com.android.volley.Response.Listener<String>() {
@@ -304,7 +291,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnInfoWi
             JSONObject overviewPolylines = routes.getJSONObject("overview_polyline");
             String encodedString = overviewPolylines.getString("points");
             List<LatLng> list = decodePoly(encodedString);
-            Polyline line = mMap.addPolyline(new PolylineOptions()
+            Polyline line = mGoogleMap.addPolyline(new PolylineOptions()
                     .addAll(list)
                     .width(12)
                     .color(Color.parseColor("#05b1fb"))//Google maps blue color
@@ -353,37 +340,87 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnInfoWi
     public void onInfoWindowClick(final Marker marker) {
 
 
+
+
+
         // TODO Auto-generated method stub
         String title = marker.getTitle();
 
         if (!title.equalsIgnoreCase("ME")) {
-            AlertDialog.Builder alert = new AlertDialog.Builder(MapsActivity.this);
-            alert.setTitle(title);
-
-            alert.setMessage("Do you Want see Direction");
-            alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-
-                    Uri gmmIntentUri = Uri.parse("google.navigation:q="
-                            + String.valueOf(marker.getPosition().latitude) + ","
-                            + String.valueOf(marker.getPosition().longitude));
-                    Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-                    mapIntent.setPackage("com.google.android.apps.maps");
-                    startActivity(mapIntent);
-
-
-                }
-            });
-            alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-
-                }
-            });
-
-            alert.show();
-
+            showSettingDialog(marker);
         }
 
+    }
 
+    private void showSettingDialog(final Marker marker) {
+
+        final Dialog dialog_start = new Dialog(this,
+                android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        dialog_start.setCancelable(true);
+        dialog_start.setContentView(R.layout.dialog_infowindow_click);
+
+        Button btn_path = (Button) dialog_start.findViewById(R.id.dialog_show_path);
+        Button btn_picker = (Button) dialog_start.findViewById(R.id.dialog_show_picker);
+
+
+        btn_path.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Uri gmmIntentUri = Uri.parse("google.navigation:q="
+                        + String.valueOf(marker.getPosition().latitude) + ","
+                        + String.valueOf(marker.getPosition().longitude));
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                mapIntent.setPackage("com.google.android.apps.maps");
+                startActivity(mapIntent);
+
+                dialog_start.dismiss();
+
+            }
+        });
+
+        btn_picker.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openPicker(lattitude, langitude);
+            }
+        });
+
+
+
+
+        dialog_start.show();
+    }
+
+    private void openPicker(double lattitude, double langitude) {
+        PlacePicker.IntentBuilder intentBuilder;
+        Intent intent;
+
+        try {
+            intentBuilder = new PlacePicker.IntentBuilder();
+            intentBuilder.setLatLngBounds(new LatLngBounds(new LatLng(lattitude - .002, langitude - .002),
+                    new LatLng(lattitude + .002, langitude + .002)));
+
+            intent = intentBuilder.build(getApplicationContext());
+            startActivityForResult(intent, PLACE_PICKER_REQUEST);
+
+        } catch (GooglePlayServicesRepairableException e) {
+            e.printStackTrace();
+        } catch (GooglePlayServicesNotAvailableException e) {
+            e.printStackTrace();
+        }
+
+    }
+    @Override
+    protected void onActivityResult(int requestCode,
+                                    int resultCode, Intent data) {
+
+        if (requestCode == PLACE_PICKER_REQUEST
+                && resultCode == Activity.RESULT_OK) {
+            final Place place = PlacePicker.getPlace(data, this);
+            openPicker(place.getLatLng().latitude, place.getLatLng().longitude);
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }

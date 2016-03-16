@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final String DRAWER_LIST_INFORMATION = "Information";
     public static final String DRAWER_LIST_HOSPITAL = "Hospital";
     public static final String DRAWER_LIST_POLICE = "Police";
+    public static final String DRAWER_LIST_HEATMAP = "Heat Map";
 
     private ProgressBar progressBar;
     Gson gson;
@@ -219,6 +220,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         listDataHeader.add(DRAWER_LIST_HISTORY);
         listDataHeader.add(DRAWER_LIST_MANAGE_SMS);
         listDataHeader.add(DRAWER_LIST_INFORMATION);
+        listDataHeader.add(DRAWER_LIST_HEATMAP);
         listDataHeader.add(DRAWER_LIST_TUTORIAL);
         listDataHeader.add(DRAWER_LIST_SETTING);
         listDataHeader.add(DRAWER_LIST_LOGOUT);
@@ -292,6 +294,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     if (listDataHeader.get(i).contains(DRAWER_LIST_SETTING)) {
                         Intent intent = new Intent(MainActivity.this, UserSettingActivity.class);
+                        startActivity(intent);
+                    }
+                    if (listDataHeader.get(i).contains(DRAWER_LIST_HEATMAP)) {
+                        Intent intent = new Intent(MainActivity.this, HeatMapActivity.class);
                         startActivity(intent);
                     }
                 }

@@ -26,6 +26,7 @@ public class SaveManager {
     private static final String KEY_USER_NOTIFICATION_RANGE = "user_notification_range";
 
 
+
     private SharedPreferences.Editor editor;
     private Context context;
 

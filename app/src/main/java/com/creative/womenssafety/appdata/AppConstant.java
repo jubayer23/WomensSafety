@@ -71,6 +71,9 @@ public class AppConstant {
 
        // user_id=16&event_id=2
     }
+    public static String getUrlForHeatMap() {
+        return BaseUrl + "hitmap.php";
+    }
 
     public static String DirectionApiUrl(double sourcelat, double sourcelog, double destlat, double destlog) {
         StringBuilder urlString = new StringBuilder();

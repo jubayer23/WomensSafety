@@ -26,6 +26,7 @@
                 android:layout_height="50dp"
                 android:background="@drawable/rounded_edittext"
                 android:hint="Email"
+                android:inputType="text"
                 android:maxLines="1"
                 android:paddingLeft="10dp"
                 android:textColor="@color/black">
@@ -50,6 +51,7 @@
                 android:layout_height="50dp"
                 android:background="@drawable/rounded_edittext"
                 android:hint="Password"
+                android:inputType="textPassword"
                 android:maxLines="1"
                 android:paddingLeft="10dp"
                 android:textColor="@color/black" />
@@ -65,7 +67,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="30dp"
             android:background="@drawable/btn_login_selector"
             android:text="Login"
             android:textColor="@color/white"
@@ -79,7 +81,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="16dp"
             android:text="Not Yet Register?"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:textSize="25sp" />
 
     </LinearLayout>

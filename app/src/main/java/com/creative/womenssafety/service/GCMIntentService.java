@@ -13,8 +13,7 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.creative.womenssafety.MainActivity;
-import com.creative.womenssafety.MapsActivity;
+import com.creative.womenssafety.MapActivity;
 import com.creative.womenssafety.R;
 import com.creative.womenssafety.receiver.GCMBroadcastReceiver;
 import com.creative.womenssafety.utils.GPSTracker;
@@ -99,7 +98,7 @@ public class GCMIntentService extends IntentService {
 
         Log.d("DEBUG_noti", "onSendNoti");
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-        Intent notifyIntent = new Intent(this, MapsActivity.class);
+        Intent notifyIntent = new Intent(this, MapActivity.class);
         notifyIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         notifyIntent.putExtra("lattitude", lat);
         notifyIntent.putExtra("langitude", lng);

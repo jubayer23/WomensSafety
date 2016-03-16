@@ -9,13 +9,11 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
-import com.creative.womenssafety.MapsActivity;
+import com.creative.womenssafety.MapActivity;
 import com.creative.womenssafety.R;
 import com.creative.womenssafety.adapter.HistoryListAdapter;
-import com.creative.womenssafety.adapter.PoliceListAdapter;
 import com.creative.womenssafety.appdata.AppConstant;
 import com.creative.womenssafety.model.History;
-import com.creative.womenssafety.model.Police;
 import com.creative.womenssafety.sharedprefs.SaveManager;
 import com.creative.womenssafety.utils.GPSTracker;
 import com.google.gson.Gson;
@@ -76,7 +74,7 @@ public class HistoryList extends AppCompatActivity {
 
                 String event_id = history.getEvent_id();
 
-                Intent intent = new Intent(HistoryList.this, MapsActivity.class);
+                Intent intent = new Intent(HistoryList.this, MapActivity.class);
 
                 intent.putExtra("lattitude",Double.parseDouble(lat));
                 intent.putExtra("langitude",Double.parseDouble(lng));

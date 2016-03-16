@@ -3,8 +3,8 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimary">@color/oil</item>
+        <item name="colorPrimaryDark">@color/jet</item>
         <item name="colorAccent">@color/colorAccent</item>
         <!--<item name="windowNoTitle">true</item>-->
         <!--<item name="windowActionBar">false</item>-->
@@ -23,8 +23,8 @@
         <!--<item name="colorAccent">@color/colorAccent</item>-->
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimary</item>
+        <item name="colorPrimary">@color/grey</item>
+        <item name="colorPrimaryDark">@color/black</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
