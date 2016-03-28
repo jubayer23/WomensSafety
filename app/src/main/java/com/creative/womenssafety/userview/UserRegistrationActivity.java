@@ -75,11 +75,9 @@ public class UserRegistrationActivity extends AppCompatActivity {
                     boolean checkWarn = showWarningDialog();
                     if (checkWarn) {
                         progressDialog.show();
-                        if(saveManager.getUserGcmRegId().equals("0"))
-                        {
+                        if (saveManager.getUserGcmRegId().equals("0")) {
                             new GCMRegistrationTask().execute();
-                        }else
-                        {
+                        } else {
                             singnUP(saveManager.getUserGcmRegId());
                         }
                     }
@@ -246,6 +244,8 @@ public class UserRegistrationActivity extends AppCompatActivity {
 
 
             int status = response.getInt("success");
+
+            if(status == 1)saveManager.setUserId(response.getString("user_id"));
             Log.d("DEBUG_regStatus", String.valueOf(status));
 
 
@@ -272,11 +272,14 @@ public class UserRegistrationActivity extends AppCompatActivity {
 
             saveManager.setIsLoggedIn(true);
 
+            saveManager.setUserEmail(email);
+            saveManager.setUserName(userName);
+
             Intent intent = new Intent(UserRegistrationActivity.this, MainActivity.class);
 
             startActivity(intent);
 
-            LoginOrSingupActivity.loginOrSignUpActivity.finish();
+            UserLoginActivity.userLoginActivity.finish();
 
             finish();
         } else {

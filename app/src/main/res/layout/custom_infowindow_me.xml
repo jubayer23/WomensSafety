@@ -20,10 +20,11 @@
             android:layout_height="wrap_content"
             android:text="My Title"
             android:divider="@drawable/list_divider"
-            android:textColor="#FF00FF"
+            android:textColor="#191970"
             android:padding="10dp"
+            android:textStyle="bold"
             android:layout_centerHorizontal="true"
-            android:background="#00000000"
+
             />
 
 
@@ -33,10 +34,10 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/metitle"
             android:text="My Info"
-            android:textColor="#FF1493"
+            android:textColor="#000"
             android:padding="10dp"
             android:layout_centerHorizontal="true"
-            android:background="#00000000"
+
             />
 
     </RelativeLayout>
