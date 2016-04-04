@@ -10,10 +10,10 @@ import java.util.ArrayList;
 public class AppConstant {
 
 
-
-
-
     public static final String GCM_SENDER_ID = "651399612622";
+
+    //http://women-safety.co.nf/web_server_demo_gcm/
+    //http://besafebd.com/server/
 
     public static String BaseUrl = "http://besafebd.com/server/";
 
@@ -21,16 +21,15 @@ public class AppConstant {
 
     public static ArrayList<History> histories = new ArrayList<History>();
 
-    public static final int[] notification_range = {500,1000,1500,2000, 2500, 3000, 3500, 4000};
+    public static final int[] notification_range = {500, 1000, 1500, 2000, 2500, 3000, 3500, 4000};
 
 
-    public static String getUserRegUrl(String regId, String name, String email, String password, String phone_no, String device_id) {
+    public static String getUserRegUrl(String regId, String name, String email, String password, String device_id) {
         return BaseUrl + "register_user.php?"
                 + "regId=" + regId
                 + "&name=" + name
                 + "&email=" + email
                 + "&password=" + password
-                + "&phone_no=" + phone_no
                 + "&device_id=" + device_id;
     }
 
@@ -57,20 +56,23 @@ public class AppConstant {
                 + "region=" + region;
     }
 
-    public static String getUrlForHistoryList(String user_id,double lat,double lng,int range) {
+    public static String getUrlForHistoryList(String user_id, double lat, double lng, int range, int page_no) {
         return BaseUrl + "history.php?"
-                + "&user_id=" + user_id
+                + "user_id=" + user_id
                 + "&lat=" + lat
                 + "&lng=" + lng
-                + "&range=" + String.valueOf(range);
+                + "&range=" + String.valueOf(range)
+                + "&page=" + page_no;
 
     }
-    public static String getUrlForSetHistorySeenUnseen(String user_id,String event_id) {
+
+    public static String getUrlForSetHistorySeenUnseen(String user_id, String event_id) {
         return BaseUrl + "seen.php?"
                 + "user_id=" + user_id + "&event_id=" + event_id;
 
-       // user_id=16&event_id=2
+        // user_id=16&event_id=2
     }
+
     public static String getUrlForHeatMap() {
         return BaseUrl + "hitmap.php";
     }
@@ -90,6 +92,9 @@ public class AppConstant {
         urlString.append(Double.toString(destlog));
         urlString.append("&sensor=false&mode=driving&alternatives=true");
         urlString.append("AIzaSyBJonkf9zcXK2o1Y9mSbVfHiYjjw6qFkRY");
+
         return urlString.toString();
     }
+
+
 }

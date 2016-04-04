@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (checkDeviceConfig.isConnectingToInternet()) {
             //showing progressBar
             showOrHideProgressBar();
-            sendRequestToServerForHistoryFetch(AppConstant.getUrlForHistoryList(saveData.getUserId(), saveData.getLat(), saveData.getLng(), saveData.getUserNotificationRange()));
+            sendRequestToServerForHistoryFetch(AppConstant.getUrlForHistoryList(saveData.getUserId(), saveData.getLat(), saveData.getLng(), saveData.getUserNotificationRange(),1));
         } else {
             //Internet Connection is not present
             AlertDialogForAnything.showAlertDialogWhenComplte(MainActivity.this, "Internet Connection Error",
@@ -203,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (checkDeviceConfig.isConnectingToInternet()) {
                     //showing progressBar
                     showOrHideProgressBar();
-                    sendRequestToServerForHistoryFetch(AppConstant.getUrlForHistoryList(saveData.getUserId(), saveData.getLat(), saveData.getLng(), saveData.getUserNotificationRange()));
+                    sendRequestToServerForHistoryFetch(AppConstant.getUrlForHistoryList(saveData.getUserId(), saveData.getLat(), saveData.getLng(), saveData.getUserNotificationRange(),1));
                 }
             }
         };
@@ -367,6 +367,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     public void sendRequestToServer(String sentUrl) {
+        Log.d("DEBUG_url",sentUrl);
 
         StringRequest req = new StringRequest(Request.Method.GET, sentUrl,
                 new Response.Listener<String>() {
@@ -424,11 +425,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                             showOrHideProgressBar();
 
-                            FLAG_ACTIVITY_RESUME = true;
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-
+                        FLAG_ACTIVITY_RESUME = true;
 
                     }
                 }, new Response.ErrorListener() {
@@ -447,8 +448,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         for (String phoneNo : phoneList) {
             //String phoneNo = textPhoneNo.getText().toString();
-            Log.d("DEBUG_phone", phoneNo);
-            Log.d("DEBUG_phone2", "no");
+            //Log.d("DEBUG_phone", phoneNo);
+           // Log.d("DEBUG_phone2", "no");
             String sms = "HELP ME";
             try {
                 SmsManager smsManager = SmsManager.getDefault();

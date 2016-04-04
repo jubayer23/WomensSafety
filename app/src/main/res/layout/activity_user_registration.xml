@@ -18,11 +18,11 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
-            android:background="@drawable/input_fields_4"
+            android:background="@drawable/input_fields_3"
             android:orientation="vertical"
             android:paddingBottom="4dp"
             android:paddingTop="4dp"
-            android:weightSum="4">
+            android:weightSum="3">
 
             <EditText
                 android:id="@+id/userNameSignUpEd"
@@ -54,21 +54,6 @@
                 android:textStyle="normal"
                 android:typeface="serif" />
 
-            <EditText
-                android:id="@+id/phoneNoEd"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="6dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_weight="1"
-                android:background="@null"
-                android:ems="10"
-                android:hint="Mobile No"
-                android:inputType="text"
-                android:textStyle="normal"
-                android:typeface="serif" />
 
 
             <EditText
