@@ -57,15 +57,18 @@ public class UserLoginActivity extends AppCompatActivity {
 
     GoogleCloudMessaging gcm;
 
+    private static final String KEY_SUCCESS = "success";
+    private static final String KEY_USER_ID = "user_id";
+    private static final String KEY_USER_NAME = "user_name";
+    private static final String KEY_USER_EMAIL = "email";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
 
         setContentView(R.layout.activity_user_login);
-       // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
+        // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
         userLoginActivity = this;
@@ -93,11 +96,9 @@ public class UserLoginActivity extends AppCompatActivity {
                     if (showWarningDialog()) {
                         progressDialog.show();
 
-                        if(saveManager.getUserGcmRegId().equals("0"))
-                        {
+                        if (saveManager.getUserGcmRegId().equals("0")) {
                             new GCMRegistrationTask().execute();
-                        }else
-                        {
+                        } else {
                             LoginCheck(saveManager.getUserGcmRegId());
                         }
 
@@ -154,7 +155,7 @@ public class UserLoginActivity extends AppCompatActivity {
 
         boolean valid = true;
 
-        if (userNameEd.getText().toString().isEmpty() ) {
+        if (userNameEd.getText().toString().isEmpty()) {
             userNameEd.setError("Enter Username");
             valid = false;
         } else {
@@ -168,19 +169,14 @@ public class UserLoginActivity extends AppCompatActivity {
             passwordEd.setError(null);
         }
 
-        if(!(userNameEd.getText().toString().isEmpty()&&passwordEd.getText().toString().isEmpty()))
-        {
-            if(userNameEd.getText().toString().isEmpty()&&!passwordEd.getText().toString().isEmpty())
-            {
+        if (!(userNameEd.getText().toString().isEmpty() && passwordEd.getText().toString().isEmpty())) {
+            if (userNameEd.getText().toString().isEmpty() && !passwordEd.getText().toString().isEmpty()) {
                 userNameEd.requestFocus();
             }
-            if(!userNameEd.getText().toString().isEmpty()&&passwordEd.getText().toString().isEmpty())
-            {
+            if (!userNameEd.getText().toString().isEmpty() && passwordEd.getText().toString().isEmpty()) {
                 passwordEd.requestFocus();
             }
         }
-
-
 
 
         return valid;
@@ -278,10 +274,15 @@ public class UserLoginActivity extends AppCompatActivity {
         try {
 
 
-            int status = response.getInt("success");
-            Log.d("DEBUG_loginStatus", String.valueOf(status));
+            int status = response.getInt(KEY_SUCCESS);
+           // Log.d("DEBUG_loginStatus", String.valueOf(status));
 
-            if(status == 1)saveManager.setUserId(response.getString("user_id"));
+            if (status == 1) {
+                saveManager.setUserId(response.getString(KEY_USER_ID));
+                saveManager.setUserName(response.getString(KEY_USER_NAME));
+                saveManager.setUserEmail(response.getString(KEY_USER_EMAIL));
+
+            }
 
 
             if (progressDialog.isShowing()) progressDialog.dismiss();

@@ -33,11 +33,11 @@ import java.util.regex.Pattern;
 
 public class UserRegistrationActivity extends AppCompatActivity {
 
-    EditText usernamaEd, emailEd, passEd, phoneEd;
+    EditText usernamaEd, emailEd, passEd;
 
     Button signUp;
 
-    String userName, email, password, phoneNo;
+    String userName, email, password;
 
 
     ProgressDialog progressDialog;
@@ -68,7 +68,6 @@ public class UserRegistrationActivity extends AppCompatActivity {
 
                     userName = usernamaEd.getText().toString().trim();
                     email = emailEd.getText().toString().trim();
-                    phoneNo = phoneEd.getText().toString().trim();
                     password = passEd.getText().toString().trim();
 
 
@@ -109,7 +108,6 @@ public class UserRegistrationActivity extends AppCompatActivity {
 
         emailEd = (EditText) findViewById(R.id.emailSignEd);
 
-        phoneEd = (EditText) findViewById(R.id.phoneNoEd);
 
         passEd = (EditText) findViewById(R.id.passSignEd);
 
@@ -134,10 +132,7 @@ public class UserRegistrationActivity extends AppCompatActivity {
         } else if (passEd.getText().toString().trim().isEmpty()) {
 
             AlertDialogForAnything.showAlertDialogWhenComplte(UserRegistrationActivity.this, "EMPTY FIELD", "Password Field is Empty", false);
-        } else if (phoneEd.getText().toString().trim().isEmpty()) {
-
-            AlertDialogForAnything.showAlertDialogWhenComplte(UserRegistrationActivity.this, "EMPTY FIELD", "Phone No Field is Empty", false);
-        } else if (!validEmail(emailEd.getText().toString().trim())) {
+        }  else if (!validEmail(emailEd.getText().toString().trim())) {
             AlertDialogForAnything.showAlertDialogWhenComplte(UserRegistrationActivity.this, "INVALID", "Email InValid", false);
 
         } else {
@@ -192,7 +187,7 @@ public class UserRegistrationActivity extends AppCompatActivity {
         // TODO Auto-generated method stub
 
 
-        String url_reg = AppConstant.getUserRegUrl(gcmRegId, userName, email, password, phoneNo, DeviceInfoUtils.getDeviceID(UserRegistrationActivity.this));
+        String url_reg = AppConstant.getUserRegUrl(gcmRegId, userName, email, password, DeviceInfoUtils.getDeviceID(UserRegistrationActivity.this));
 
         Log.d("DEBUG_regUrl", url_reg);
         this.sendBroadcast(new Intent("com.google.android.intent.action.GTALK_HEARTBEAT"));
