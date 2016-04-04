@@ -15,7 +15,7 @@ public class AppConstant {
 
     public static final String GCM_SENDER_ID = "651399612622";
 
-    public static String BaseUrl = "http://women-safety.co.nf/web_server_demo_gcm/";
+    public static String BaseUrl = "http://besafebd.com/server/";
 
     public static int NUM_OF_UNSEEN_HISTORY = 2;
 
@@ -90,9 +90,6 @@ public class AppConstant {
         urlString.append(Double.toString(destlog));
         urlString.append("&sensor=false&mode=driving&alternatives=true");
         urlString.append("AIzaSyBJonkf9zcXK2o1Y9mSbVfHiYjjw6qFkRY");
-
         return urlString.toString();
     }
-
-
 }
