@@ -21,7 +21,7 @@ public class AppConstant {
 
     public static ArrayList<History> histories = new ArrayList<History>();
 
-    public static final int[] notification_range = {500, 1000, 1500, 2000, 2500, 3000, 3500, 4000};
+    public static final int[] notification_range = {5, 10, 50, 100, 150, 300, 400, 500};
 
 
     public static String getUserRegUrl(String regId, String name, String email, String password, String device_id) {

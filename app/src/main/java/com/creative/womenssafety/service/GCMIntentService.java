@@ -42,7 +42,7 @@ public class GCMIntentService extends IntentService {
             String lat = "24.913596";
             String lng = "91.90391";
             String event_id = "1";
-            String range = "5000";
+            String range = "5";
             try {
                 lat = extras.getString("lattitude");
                 lat.toString().trim();
@@ -69,17 +69,18 @@ public class GCMIntentService extends IntentService {
                             gps.getLongitude(), Double.parseDouble(lat),
                             Double.parseDouble(lng), results);
                     int int_result = (int) results[0];
+                    int_result = (int_result / 1609);
                     if ( int_result <= Integer.parseInt(range)) {
-                        sendNotification("Message: " + message, Double.parseDouble(lat), Double.parseDouble(lng), Integer.parseInt(event_id));
+                        sendNotification(message, Double.parseDouble(lat), Double.parseDouble(lng), Integer.parseInt(event_id));
 
                     }
                 } catch (Exception e) {
-                    sendNotification("Message: " + message , Double.parseDouble(lat), Double.parseDouble(lng), Integer.parseInt(event_id));
+                    sendNotification( message , Double.parseDouble(lat), Double.parseDouble(lng), Integer.parseInt(event_id));
                 }
 
 
             } else {
-                sendNotification("Message: " + message, Double.parseDouble(lat), Double.parseDouble(lng), Integer.parseInt(event_id));
+                sendNotification(message, Double.parseDouble(lat), Double.parseDouble(lng), Integer.parseInt(event_id));
             }
 
 
