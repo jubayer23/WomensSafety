@@ -33,12 +33,13 @@ public class AppConstant {
                 + "&device_id=" + device_id;
     }
 
-    public static String getUrlForHelpSend(String regId, String lat, String lang, int range) {
+    public static String getUrlForHelpSend(String regId, String lat, String lang, int range,String message) {
         return BaseUrl + "send_message_to_all.php?"
                 + "regId=" + regId
                 + "&lat=" + lat
                 + "&lng=" + lang
-                + "&range=" + String.valueOf(range);
+                + "&range=" + String.valueOf(range)
+                + "&sms=" + message;
 
     }
 

@@ -68,6 +68,10 @@ public class HistoryListAdapter extends BaseAdapter {
             viewHolder.name = (TextView) convertView
                     .findViewById(R.id.history_sms);
 
+
+            viewHolder.from_username = (TextView) convertView
+                    .findViewById(R.id.history_from_username);
+
             viewHolder.time = (TextView) convertView
                     .findViewById(R.id.history_time);
 
@@ -86,6 +90,7 @@ public class HistoryListAdapter extends BaseAdapter {
         }
 
         viewHolder.name.setText(history.getSms());
+        viewHolder.from_username.setText(history.getName());
         viewHolder.time.setText(history.getEvent_time());
 
 
@@ -101,6 +106,7 @@ public class HistoryListAdapter extends BaseAdapter {
     private static class ViewHolder {
         private TextView name;
         private TextView time;
+        private TextView from_username;
         LinearLayout ll_layout;
     }
 

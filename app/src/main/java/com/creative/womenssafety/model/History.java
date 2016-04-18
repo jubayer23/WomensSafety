@@ -3,21 +3,31 @@ package com.creative.womenssafety.model;
 /**
  * Created by comsol on 26-Dec-15.
  */
-public class History  {
+public class History {
     String event_id;
     String lat;
     String lng;
     String sms;
     String event_time;
     String seen;
+    String name;
 
-    public History(String event_id, String lat, String lng, String sms, String event_time, String seen) {
+    public History(String event_id, String lat, String lng, String sms, String event_time, String seen, String name) {
         this.event_id = event_id;
         this.lat = lat;
         this.lng = lng;
         this.sms = sms;
         this.event_time = event_time;
         this.seen = seen;
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEvent_id() {

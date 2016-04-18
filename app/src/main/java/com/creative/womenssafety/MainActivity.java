@@ -21,9 +21,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.creative.womenssafety.HowToUse.HowToUse;
 import com.creative.womenssafety.UserSettingView.ManageSmsList;
@@ -56,11 +60,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult> {
 
@@ -392,7 +398,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     this.sendBroadcast(new Intent("com.google.android.intent.action.GTALK_HEARTBEAT"));
                     this.sendBroadcast(new Intent("com.google.android.intent.action.MCS_HEARTBEAT"));
 
-                    sendRequestToServer(AppConstant.getUrlForHelpSend(gcmRegId, lat, lng, saveData.getUserNotificationRange()));
+                    sendRequestToServer(AppConstant.getUrlForHelpSend(gcmRegId, lat, lng, saveData.getUserNotificationRange(), saveData.getNotificationMsg()));
                     sendSMStoFriendList();
 
                 } else {
@@ -427,9 +433,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onErrorResponse(VolleyError error) {
 
-
             }
-        });
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json; charset=utf-8");
+                return headers;
+            }
+        };
 
         AppController.getInstance().addToRequestQueue(req);
 
