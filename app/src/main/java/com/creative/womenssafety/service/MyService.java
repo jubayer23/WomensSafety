@@ -75,7 +75,7 @@ public class MyService extends Service {
                     user_lat = String.valueOf(saveManager.getLat());
                     user_lang = String.valueOf(saveManager.getLng());
                 }
-                String URL = AppConstant.getUrlForHelpSend(saveManager.getUserGcmRegId(), user_lat, user_lang,saveManager.getUserNotificationRange());
+                String URL = AppConstant.getUrlForHelpSend(saveManager.getUserGcmRegId(), user_lat, user_lang,saveManager.getUserNotificationRange(),saveManager.getNotificationMsg());
 
                 Log.d("DEBUG_helpUrl", URL);
 

@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +34,8 @@ public class UserSettingActivity extends AppCompatActivity implements View.OnCli
 
     private Button btn_save;
 
+    private EditText et_notifition_msg;
+
 
     public static final String URL_REGEX = "^((https?|ftp)://|(www|ftp)\\.)?[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].*)?$";
 
@@ -40,8 +43,8 @@ public class UserSettingActivity extends AppCompatActivity implements View.OnCli
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-       // getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-         //       WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        // getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+        //       WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_usersetting);
 
@@ -79,6 +82,9 @@ public class UserSettingActivity extends AppCompatActivity implements View.OnCli
 
         btn_save = (Button) findViewById(R.id.setting_save);
 
+        et_notifition_msg = (EditText) findViewById(R.id.setting_notification_message);
+        et_notifition_msg.setText(saveManager.getNotificationMsg().replaceAll("%20"," "));
+
         btn_save.setOnClickListener(this);
     }
 
@@ -113,11 +119,20 @@ public class UserSettingActivity extends AppCompatActivity implements View.OnCli
         if (id == R.id.setting_save) {
 
 
+            if (et_notifition_msg.getText().toString().isEmpty()) {
+                Toast.makeText(UserSettingActivity.this, "Message Cant Be Empty!!", Toast.LENGTH_LONG).show();
 
-            Toast.makeText(UserSettingActivity.this, "Saved Successfull", Toast.LENGTH_LONG).show();
+
+            } else {
+                saveManager.setNotificationMsg(et_notifition_msg.getText().toString().replaceAll(" ","%20"));
+
+                Toast.makeText(UserSettingActivity.this, "Saved Successfull", Toast.LENGTH_LONG).show();
 
 
-            finish();
+                finish();
+            }
+
+
         }
     }
 }

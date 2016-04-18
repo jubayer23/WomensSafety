@@ -24,6 +24,7 @@ public class SaveManager {
     private static final String KEY_USER_LAT = "user_lat";
     private static final String KEY_USER_LNG = "user_lng";
     private static final String KEY_USER_NOTIFICATION_RANGE = "user_notification_range";
+    private static final String KEY_NOTIFICATION_MSG = "notification_msg";
 
 
 
@@ -127,6 +128,15 @@ public class SaveManager {
 
     public void setUserId(String value) {
         editor.putString(KEY_USER_ID, value);
+        editor.apply();
+    }
+
+    public String getNotificationMsg() {
+        return mSharedPreferences.getString(KEY_NOTIFICATION_MSG, "HELP ME HELP ME!!");
+    }
+
+    public void setNotificationMsg(String value) {
+        editor.putString(KEY_NOTIFICATION_MSG, value);
         editor.apply();
     }
 
