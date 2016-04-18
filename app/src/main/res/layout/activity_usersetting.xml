@@ -58,6 +58,24 @@
                 android:src="@drawable/spinner_arrow" />
         </RelativeLayout>
 
+        <SeekBar
+            android:id="@+id/set_range"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:layout_marginBottom="10dp"
+            android:max="200"
+            android:progress="10"
+            android:progressDrawable="@drawable/progressbar" />
+        <TextView
+            android:id="@+id/seekbar_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:layout_gravity="center_horizontal"/>
 
         <Button
             android:id="@+id/setting_save"
