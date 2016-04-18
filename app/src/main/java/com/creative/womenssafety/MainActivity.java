@@ -3,6 +3,7 @@ package com.creative.womenssafety;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -39,6 +40,16 @@ import com.creative.womenssafety.userInfoView.PoliceInfo;
 import com.creative.womenssafety.userview.UserLoginActivity;
 import com.creative.womenssafety.utils.CheckDeviceConfig;
 import com.creative.womenssafety.utils.GPSTracker;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -51,7 +62,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult> {
 
 
     private CheckDeviceConfig checkDeviceConfig;
@@ -90,6 +101,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private static boolean FLAG_ACTIVITY_RESUME = true;
 
+
+    protected GoogleApiClient mGoogleApiClient;
+    protected LocationRequest locationRequest;
+    private static final int REQUEST_CHECK_SETTINGS = 100;
+    private static boolean app_comeFrom_background = false;
+
     //private  checkDeviceConfig
 
     @Override
@@ -124,12 +141,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (checkDeviceConfig.isConnectingToInternet()) {
             //showing progressBar
             showOrHideProgressBar();
-            sendRequestToServerForHistoryFetch(AppConstant.getUrlForHistoryList(saveData.getUserId(), saveData.getLat(), saveData.getLng(), saveData.getUserNotificationRange(),1));
+            sendRequestToServerForHistoryFetch(AppConstant.getUrlForHistoryList(saveData.getUserId(), saveData.getLat(), saveData.getLng(), saveData.getUserNotificationRange(), 1));
         } else {
             //Internet Connection is not present
             AlertDialogForAnything.showAlertDialogWhenComplte(MainActivity.this, "Internet Connection Error",
                     "Please connect to working Internet connection", false);
         }
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this).build();
+        mGoogleApiClient.connect();
+
+        locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(20 * 1000);
+        locationRequest.setFastestInterval(5 * 1000);
 
 
     }
@@ -150,8 +178,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //stop executing code by return
             return;
         }
-        if (!gps.canGetLocation()) {
-            showGPSDisabledAlertToUser();
+        if (app_comeFrom_background && !gps.canGetLocation()) {
+            app_comeFrom_background = false;
+            // showGPSDisabledAlertToUser();
+            if (mGoogleApiClient.isConnected()) {
+                LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                        .addLocationRequest(locationRequest);
+                builder.setAlwaysShow(true);
+                PendingResult<LocationSettingsResult> result =
+                        LocationServices.SettingsApi.checkLocationSettings(
+                                mGoogleApiClient,
+                                builder.build()
+                        );
+
+                result.setResultCallback(this);
+            }
+
 
             return;
         }
@@ -203,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (checkDeviceConfig.isConnectingToInternet()) {
                     //showing progressBar
                     showOrHideProgressBar();
-                    sendRequestToServerForHistoryFetch(AppConstant.getUrlForHistoryList(saveData.getUserId(), saveData.getLat(), saveData.getLng(), saveData.getUserNotificationRange(),1));
+                    sendRequestToServerForHistoryFetch(AppConstant.getUrlForHistoryList(saveData.getUserId(), saveData.getLat(), saveData.getLng(), saveData.getUserNotificationRange(), 1));
                 }
             }
         };
@@ -367,7 +409,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     public void sendRequestToServer(String sentUrl) {
-        Log.d("DEBUG_url",sentUrl);
+        Log.d("DEBUG_url", sentUrl);
 
         StringRequest req = new StringRequest(Request.Method.GET, sentUrl,
                 new Response.Listener<String>() {
@@ -395,7 +437,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void sendRequestToServerForHistoryFetch(String sentUrl) {
 
-        Log.d("DEBUG_history_url",sentUrl);
+        Log.d("DEBUG_history_url", sentUrl);
 
         StringRequest req = new StringRequest(Request.Method.GET, sentUrl,
                 new Response.Listener<String>() {
@@ -449,7 +491,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         for (String phoneNo : phoneList) {
             //String phoneNo = textPhoneNo.getText().toString();
             //Log.d("DEBUG_phone", phoneNo);
-           // Log.d("DEBUG_phone2", "no");
+            // Log.d("DEBUG_phone2", "no");
             String sms = "HELP ME";
             try {
                 SmsManager smsManager = SmsManager.getDefault();
@@ -473,6 +515,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Intent home = new Intent(MainActivity.this, ManageSmsList.class);
         startActivity(home);
         //finish();
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        app_comeFrom_background = true;
     }
 
     @Override
@@ -514,6 +563,87 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             progressBar.setVisibility(View.INVISIBLE);
         } else
             progressBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
+        builder.setAlwaysShow(true);
+        PendingResult<LocationSettingsResult> result =
+                LocationServices.SettingsApi.checkLocationSettings(
+                        mGoogleApiClient,
+                        builder.build()
+                );
+
+        result.setResultCallback(this);
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onResult(LocationSettingsResult locationSettingsResult) {
+
+        final Status status = locationSettingsResult.getStatus();
+        switch (status.getStatusCode()) {
+            case LocationSettingsStatusCodes.SUCCESS:
+
+                // NO need to show the dialog;
+
+                break;
+
+            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                //  Location settings are not satisfied. Show the user a dialog
+
+                try {
+                    // Show the dialog by calling startResolutionForResult(), and check the result
+                    // in onActivityResult().
+
+                    status.startResolutionForResult(MainActivity.this, REQUEST_CHECK_SETTINGS);
+
+                } catch (IntentSender.SendIntentException e) {
+
+                    //failed to show
+                }
+                break;
+
+            case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                // Location settings are unavailable so not possible to show any dialog now
+                break;
+        }
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CHECK_SETTINGS) {
+
+            if (resultCode == RESULT_OK) {
+                gps = new GPSTracker(this);
+
+                if (gps.canGetLocation() && checkDeviceConfig.isConnectingToInternet()) {
+                    saveData.setLat(String.valueOf(gps.getLatitude()));
+                    saveData.setLng(String.valueOf(gps.getLongitude()));
+                }
+
+                Toast.makeText(getApplicationContext(), "GPS enabled", Toast.LENGTH_LONG).show();
+            } else {
+
+                Toast.makeText(getApplicationContext(), "GPS is not enabled", Toast.LENGTH_LONG).show();
+            }
+
+        }
     }
 }
 

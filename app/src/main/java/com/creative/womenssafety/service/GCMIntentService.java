@@ -70,19 +70,16 @@ public class GCMIntentService extends IntentService {
                             Double.parseDouble(lng), results);
                     int int_result = (int) results[0];
                     if ( int_result <= Integer.parseInt(range)) {
-                        sendNotification("Message: " + message + "\n" + "Server Time: "
-                                + serverTime, Double.parseDouble(lat), Double.parseDouble(lng), Integer.parseInt(event_id));
+                        sendNotification("Message: " + message, Double.parseDouble(lat), Double.parseDouble(lng), Integer.parseInt(event_id));
 
                     }
                 } catch (Exception e) {
-                    sendNotification("Message: " + message + "\n" + "Server Time: "
-                            + serverTime, Double.parseDouble(lat), Double.parseDouble(lng), Integer.parseInt(event_id));
+                    sendNotification("Message: " + message , Double.parseDouble(lat), Double.parseDouble(lng), Integer.parseInt(event_id));
                 }
 
 
             } else {
-                sendNotification("Message: " + message + "\n" + "Server Time: "
-                        + serverTime, Double.parseDouble(lat), Double.parseDouble(lng), Integer.parseInt(event_id));
+                sendNotification("Message: " + message, Double.parseDouble(lat), Double.parseDouble(lng), Integer.parseInt(event_id));
             }
 
 
@@ -112,7 +109,7 @@ public class GCMIntentService extends IntentService {
                 );
         builder.setSmallIcon(R.mipmap.ic_launcher);
 
-        builder.setContentTitle("HELP");
+        builder.setContentTitle("HELP ME!!!");
         builder.setStyle(new NotificationCompat.BigTextStyle().bigText(msg));
         builder.setContentText(msg);
         builder.setContentIntent(notifyPendingIntent);

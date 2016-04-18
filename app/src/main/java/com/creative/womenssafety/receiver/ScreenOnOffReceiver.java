@@ -40,7 +40,7 @@ public class ScreenOnOffReceiver extends BroadcastReceiver {
 
         saveManager.setHomebuttonLastclickTime(mLastClickTime);
 
-        Log.i("[BUTTONCLICK]", String.valueOf(homeBtnClickCounter));
+       // Log.i("[BUTTONCLICK]", String.valueOf(homeBtnClickCounter));
 
         //if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
         //    Log.i("[BroadcastReceiver]", "Screen ON");
@@ -52,7 +52,7 @@ public class ScreenOnOffReceiver extends BroadcastReceiver {
         {
 
 
-            Log.i("DEBUG", String.valueOf(homeBtnClickCounter));
+           // Log.i("DEBUG", String.valueOf(homeBtnClickCounter));
             homeBtnClickCounter = 0;
             saveManager.setHomebuttonClickCounter(homeBtnClickCounter);
             //startTheservice
