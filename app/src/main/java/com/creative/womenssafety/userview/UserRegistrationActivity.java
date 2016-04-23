@@ -241,7 +241,7 @@ public class UserRegistrationActivity extends AppCompatActivity {
             int status = response.getInt("success");
 
             if(status == 1)saveManager.setUserId(response.getString("user_id"));
-            Log.d("DEBUG_regStatus", String.valueOf(status));
+            //Log.d("DEBUG_regStatus", String.valueOf(status));
 
 
             if (progressDialog.isShowing()) progressDialog.dismiss();

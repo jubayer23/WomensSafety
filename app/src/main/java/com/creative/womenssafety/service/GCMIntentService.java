@@ -94,7 +94,7 @@ public class GCMIntentService extends IntentService {
     private void sendNotification(String msg, double lat, double lng, int event_id) {
 
 
-        Log.d("DEBUG_noti", "onSendNoti");
+       // Log.d("DEBUG_noti", "onSendNoti");
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         Intent notifyIntent = new Intent(this, MapActivity.class);
         notifyIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
