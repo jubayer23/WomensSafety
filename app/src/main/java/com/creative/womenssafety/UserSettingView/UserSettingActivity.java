@@ -72,22 +72,22 @@ public class UserSettingActivity extends AppCompatActivity implements View.OnCli
 
             }
         });
-        rangeBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                seekbar_text.setText(progress + " miles");
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                saveManager.setUserNotificationRange(seekBar.getProgress());
-            }
-        });
+//        rangeBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+//            @Override
+//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+//                seekbar_text.setText(progress + " miles");
+//            }
+//
+//            @Override
+//            public void onStartTrackingTouch(SeekBar seekBar) {
+//
+//            }
+//
+//            @Override
+//            public void onStopTrackingTouch(SeekBar seekBar) {
+//                saveManager.setUserNotificationRange(seekBar.getProgress());
+//            }
+//        });
 
 
     }
@@ -101,8 +101,8 @@ public class UserSettingActivity extends AppCompatActivity implements View.OnCli
 
         spinner_range = (Spinner) findViewById(R.id.setting_spinner_range);
 
-        rangeBar = (SeekBar) findViewById(R.id.set_range);
-        seekbar_text = (TextView) findViewById(R.id.seekbar_text);
+//        rangeBar = (SeekBar) findViewById(R.id.set_range);
+//        seekbar_text = (TextView) findViewById(R.id.seekbar_text);
 
 
 
@@ -118,8 +118,8 @@ public class UserSettingActivity extends AppCompatActivity implements View.OnCli
     protected void onResume() {
         super.onResume();
 
-        seekbar_text.setText(saveManager.getUserNotificationRange()+" miles");
-        rangeBar.setProgress(saveManager.getUserNotificationRange());
+//        seekbar_text.setText(saveManager.getUserNotificationRange()+" miles");
+//        rangeBar.setProgress(saveManager.getUserNotificationRange());
 
         list_range.add(saveManager.getUserNotificationRange());
 

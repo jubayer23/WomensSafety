@@ -96,7 +96,7 @@
         <!-- Goolge API Key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBCY4ekfsMbuHBqB4cCSc4fA3M6YC3Isr4" />
+            android:value="AIzaSyCsqpJ_EQrM8Zkkd-zjD0fVywGkm3PRMAk" />
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />

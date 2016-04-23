@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final String DRAWER_LIST_MANAGE_SMS = "Manage Sms List";
     public static final String DRAWER_LIST_TUTORIAL = "How To Use";
     public static final String DRAWER_LIST_LOGOUT = "Logout";
-    public static final String DRAWER_LIST_SETTING = "Setting";
+    public static final String DRAWER_LIST_SETTING = "Settings";
     public static final String DRAWER_LIST_INFORMATION = "Information";
     public static final String DRAWER_LIST_HOSPITAL = "Hospital";
     public static final String DRAWER_LIST_POLICE = "Police";
