@@ -306,6 +306,8 @@ public class UserLoginActivity extends AppCompatActivity {
     public void gotoFrontPage(int success) {
         if (success == 1) {
 
+            saveManager.setDeviceId(DeviceInfoUtils.getDeviceID(UserLoginActivity.this));
+
             saveManager.setIsLoggedIn(true);
 
             Intent intent = new Intent(UserLoginActivity.this, MainActivity.class);

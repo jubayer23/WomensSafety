@@ -14,6 +14,7 @@ import com.creative.womenssafety.appdata.AppConstant;
 import com.creative.womenssafety.appdata.AppController;
 import com.creative.womenssafety.sharedprefs.SaveManager;
 import com.creative.womenssafety.utils.CheckDeviceConfig;
+import com.creative.womenssafety.utils.DeviceInfoUtils;
 import com.creative.womenssafety.utils.GPSTracker;
 
 import org.json.JSONObject;
@@ -75,7 +76,7 @@ public class MyService extends Service {
                     user_lat = String.valueOf(saveManager.getLat());
                     user_lang = String.valueOf(saveManager.getLng());
                 }
-                String URL = AppConstant.getUrlForHelpSend(saveManager.getUserGcmRegId(), user_lat, user_lang,saveManager.getUserNotificationRange(),saveManager.getNotificationMsg());
+                String URL = AppConstant.getUrlForHelpSend(saveManager.getUserGcmRegId(), user_lat, user_lang,saveManager.getUserNotificationRange(),saveManager.getNotificationMsg(), saveManager.getDeviceId());
 
                 Log.d("DEBUG_helpUrl", URL);
 

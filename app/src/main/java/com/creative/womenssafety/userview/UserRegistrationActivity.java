@@ -189,7 +189,7 @@ public class UserRegistrationActivity extends AppCompatActivity {
 
         String url_reg = AppConstant.getUserRegUrl(gcmRegId, userName, email, password, DeviceInfoUtils.getDeviceID(UserRegistrationActivity.this));
 
-        Log.d("DEBUG_regUrl", url_reg);
+       // Log.d("DEBUG_regUrl", url_reg);
         this.sendBroadcast(new Intent("com.google.android.intent.action.GTALK_HEARTBEAT"));
         this.sendBroadcast(new Intent("com.google.android.intent.action.MCS_HEARTBEAT"));
 
@@ -237,17 +237,37 @@ public class UserRegistrationActivity extends AppCompatActivity {
     private void parseJsonFeed(JSONObject response) {
         try {
 
+            if (progressDialog.isShowing()) progressDialog.dismiss();
 
             int status = response.getInt("success");
 
-            if(status == 1)saveManager.setUserId(response.getString("user_id"));
+            if(status == 1){
+                saveManager.setUserId(response.getString("user_id"));
+
+                saveManager.setDeviceId(DeviceInfoUtils.getDeviceID(UserRegistrationActivity.this));
+
+                saveManager.setIsLoggedIn(true);
+
+                saveManager.setUserEmail(email);
+                saveManager.setUserName(userName);
+
+                gotoFrontPage();
+
+            }else
+            {
+                if(response.getString("email").toLowerCase().equalsIgnoreCase("used")){
+                    AlertDialogForAnything.showAlertDialogWhenComplte(this, "Register Failed", "Your Email Already Registered. Please Login with exiting Id", false);
+                }else{
+                    AlertDialogForAnything.showAlertDialogWhenComplte(this, "Register Failed", "Your Device Already Registered. Please Login with exiting Id", false);
+                }
+            }
             //Log.d("DEBUG_regStatus", String.valueOf(status));
 
 
-            if (progressDialog.isShowing()) progressDialog.dismiss();
 
 
-            gotoFrontPage(status);
+
+
 
 
         } catch (JSONException e) {
@@ -262,13 +282,7 @@ public class UserRegistrationActivity extends AppCompatActivity {
     }
 
 
-    public void gotoFrontPage(int success) {
-        if (success == 1) {
-
-            saveManager.setIsLoggedIn(true);
-
-            saveManager.setUserEmail(email);
-            saveManager.setUserName(userName);
+    public void gotoFrontPage() {
 
             Intent intent = new Intent(UserRegistrationActivity.this, MainActivity.class);
 
@@ -277,9 +291,7 @@ public class UserRegistrationActivity extends AppCompatActivity {
             UserLoginActivity.userLoginActivity.finish();
 
             finish();
-        } else {
-            AlertDialogForAnything.showAlertDialogWhenComplte(this, "Register Failed", "You Are Device Already Registered. Please Login with exiting Id", false);
-        }
+
 
     }
 

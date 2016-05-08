@@ -117,8 +117,8 @@ public class HeatMapActivity extends BaseMapActivity {
                         }
 
 
-                        Toast.makeText(getApplicationContext(), "SEND",
-                                Toast.LENGTH_LONG).show();
+                        //Toast.makeText(getApplicationContext(), "SEND",
+                         //       Toast.LENGTH_LONG).show();
 
 
                     }

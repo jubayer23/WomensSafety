@@ -147,6 +147,9 @@ public class Drawer_list_adapter extends BaseExpandableListAdapter {
         if (headerTitle.equalsIgnoreCase(MainActivity.DRAWER_LIST_SETTING)) {
             return R.drawable.drawer_setting;
         }
+        if (headerTitle.equalsIgnoreCase(MainActivity.DRAWER_LIST_ABOUTUS)) {
+            return R.drawable.drawer_about_us;
+        }
 
         return R.drawable.drawer_man;
     }

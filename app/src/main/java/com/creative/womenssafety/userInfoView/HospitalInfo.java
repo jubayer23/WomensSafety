@@ -24,7 +24,6 @@ import com.creative.womenssafety.appdata.AppController;
 import com.creative.womenssafety.model.Police;
 import com.creative.womenssafety.sharedprefs.SaveManager;
 import com.creative.womenssafety.utils.GPSTracker;
-import com.google.android.gms.location.places.Place;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -39,7 +38,7 @@ import java.util.Locale;
 /**
  * Created by comsol on 20-Dec-15.
  */
-public class PoliceInfo extends AppCompatActivity {
+public class HospitalInfo extends AppCompatActivity {
 
     private ProgressBar progressBar;
 
@@ -56,6 +55,8 @@ public class PoliceInfo extends AppCompatActivity {
 
     private PoliceListAdapter policeListAdapter;
 
+    public static String police_OR_hospital = "hospital";
+
 
 
     @Override
@@ -63,8 +64,7 @@ public class PoliceInfo extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_policeinfo);
 
-        HospitalInfo.police_OR_hospital = "policeInfo";
-
+        police_OR_hospital = "hospital";
 
         init();
 
@@ -82,7 +82,7 @@ public class PoliceInfo extends AppCompatActivity {
         }
 
 
-        sendRequestToServer(AppConstant.getUrlForPoliceInfo(region));
+        sendRequestToServer(AppConstant.getUrlForHospitalInfo(region));
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -141,14 +141,14 @@ public class PoliceInfo extends AppCompatActivity {
 
                             if (policeListAdapter == null) {
                                 policeListAdapter = new PoliceListAdapter(
-                                        PoliceInfo.this, polices);
+                                        HospitalInfo.this, polices);
                                 listView.setAdapter(policeListAdapter);
 
                             } else {
                                 policeListAdapter.addMore();
                             }
 
-                           //// Toast.makeText(getApplicationContext(), "SEND",
+                           // Toast.makeText(getApplicationContext(), "SEND",
                             //        Toast.LENGTH_LONG).show();
                         } catch (JSONException e) {
                             e.printStackTrace();

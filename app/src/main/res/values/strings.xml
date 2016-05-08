@@ -8,4 +8,6 @@
     <string name="drawer_open">drawer open</string>
     <string name="drawer_close">drawer close</string>
     <string name="title_activity_how_to_use">How To Use</string>
+    <string name="title_about_us">About Us</string>
+    <string name="activity_hospital_info">Hospital Info</string>
 </resources>

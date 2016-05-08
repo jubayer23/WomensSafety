@@ -25,7 +25,7 @@ public class SaveManager {
     private static final String KEY_USER_LNG = "user_lng";
     private static final String KEY_USER_NOTIFICATION_RANGE = "user_notification_range";
     private static final String KEY_NOTIFICATION_MSG = "notification_msg";
-
+    private static final String KEY_DEVICE_ID = "device_id";
 
 
     private SharedPreferences.Editor editor;
@@ -52,6 +52,15 @@ public class SaveManager {
 
     public Double getLat() {
         return Double.parseDouble(mSharedPreferences.getString(KEY_USER_LAT, "24.913596"));
+    }
+
+    public void setDeviceId(String value) {
+        editor.putString(KEY_DEVICE_ID, value);
+        editor.apply();
+    }
+
+    public String getDeviceId() {
+        return mSharedPreferences.getString(KEY_DEVICE_ID, "null");
     }
 
     public void setLng(String value) {
@@ -132,7 +141,7 @@ public class SaveManager {
     }
 
     public String getNotificationMsg() {
-        return mSharedPreferences.getString(KEY_NOTIFICATION_MSG, "HELP ME HELP ME!!");
+        return mSharedPreferences.getString(KEY_NOTIFICATION_MSG, "HELP%20ME%20HELP%20ME!!");
     }
 
     public void setNotificationMsg(String value) {
@@ -141,7 +150,7 @@ public class SaveManager {
     }
 
     public String getUserName() {
-        return mSharedPreferences.getString(KEY_USER_NAME, "me");
+        return mSharedPreferences.getString(KEY_USER_NAME, "Anoymus");
     }
 
     public void setPhoneName(ArrayList<String> list) {

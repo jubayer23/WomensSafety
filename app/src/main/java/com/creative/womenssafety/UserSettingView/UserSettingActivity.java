@@ -103,9 +103,7 @@ public class UserSettingActivity extends AppCompatActivity implements View.OnCli
         seekbar_text.setText(saveManager.getUserNotificationRange()+" miles");
         rangeBar.setProgress(saveManager.getUserNotificationRange());
 
-
         /***********************************************/
-
 
     }
 

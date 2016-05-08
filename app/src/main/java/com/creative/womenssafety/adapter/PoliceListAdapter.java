@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
+import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import com.android.volley.toolbox.NetworkImageView;
 import com.creative.womenssafety.R;
 import com.creative.womenssafety.model.Police;
+import com.creative.womenssafety.userInfoView.HospitalInfo;
 
 import java.util.List;
 
@@ -69,6 +71,9 @@ public class PoliceListAdapter extends BaseAdapter {
             viewHolder.number = (TextView) convertView
                     .findViewById(R.id.police_number);
 
+            viewHolder.icon = (ImageView) convertView
+                    .findViewById(R.id.img);
+
 
             convertView.setTag(viewHolder);
         } else {
@@ -79,6 +84,14 @@ public class PoliceListAdapter extends BaseAdapter {
 
         viewHolder.name.setText(police.getName());
         viewHolder.number.setText(police.getNumber());
+
+
+
+        if(HospitalInfo.police_OR_hospital.equalsIgnoreCase("hospital")){
+                viewHolder.icon.setImageResource(R.drawable.hospital);
+        }else{
+            viewHolder.icon.setImageResource(R.drawable.rab);
+        }
 
 
         return convertView;
@@ -93,6 +106,7 @@ public class PoliceListAdapter extends BaseAdapter {
     private static class ViewHolder {
         private TextView name;
         private TextView number;
+        private ImageView icon;
     }
 
 

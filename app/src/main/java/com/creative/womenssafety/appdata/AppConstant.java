@@ -23,6 +23,8 @@ public class AppConstant {
 
     public static final int[] notification_range = {5, 10, 50, 100, 150, 300, 400, 500};
 
+    public static final String[] developer_name = {"Shapan Das Uzzal", "Subrata Nath", "Md. Jubayer", "Syed Ikhtiar Ahmed"};
+
 
     public static String getUserRegUrl(String regId, String name, String email, String password, String device_id) {
         return BaseUrl + "register_user.php?"
@@ -33,13 +35,14 @@ public class AppConstant {
                 + "&device_id=" + device_id;
     }
 
-    public static String getUrlForHelpSend(String regId, String lat, String lang, int range,String message) {
+    public static String getUrlForHelpSend(String regId, String lat, String lang, int range, String message, String deviceid) {
         return BaseUrl + "send_message_to_all.php?"
                 + "regId=" + regId
                 + "&lat=" + lat
                 + "&lng=" + lang
                 + "&range=" + String.valueOf(range)
-                + "&sms=" + message;
+                + "&sms=" + message
+                + "&deviceid=" + deviceid;
 
     }
 
@@ -54,6 +57,11 @@ public class AppConstant {
 
     public static String getUrlForPoliceInfo(String region) {
         return BaseUrl + "police.php?"
+                + "region=" + region;
+    }
+
+    public static String getUrlForHospitalInfo(String region) {
+        return BaseUrl + "hospital.php?"
                 + "region=" + region;
     }
 

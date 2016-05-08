@@ -39,10 +39,13 @@ import com.creative.womenssafety.drawer.Drawer_list_adapter;
 import com.creative.womenssafety.model.History;
 import com.creative.womenssafety.service.LockScreenService;
 import com.creative.womenssafety.sharedprefs.SaveManager;
+import com.creative.womenssafety.userInfoView.AboutUs;
 import com.creative.womenssafety.userInfoView.HistoryList;
+import com.creative.womenssafety.userInfoView.HospitalInfo;
 import com.creative.womenssafety.userInfoView.PoliceInfo;
 import com.creative.womenssafety.userview.UserLoginActivity;
 import com.creative.womenssafety.utils.CheckDeviceConfig;
+import com.creative.womenssafety.utils.DeviceInfoUtils;
 import com.creative.womenssafety.utils.GPSTracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -101,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final String DRAWER_LIST_HOSPITAL = "Hospital";
     public static final String DRAWER_LIST_POLICE = "Police";
     public static final String DRAWER_LIST_HEATMAP = "Heat Map";
+    public static final String DRAWER_LIST_ABOUTUS = "About Us";
 
     private ProgressBar progressBar;
     Gson gson;
@@ -272,6 +276,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         listDataHeader.add(DRAWER_LIST_HEATMAP);
         listDataHeader.add(DRAWER_LIST_TUTORIAL);
         listDataHeader.add(DRAWER_LIST_SETTING);
+        listDataHeader.add(DRAWER_LIST_ABOUTUS);
         listDataHeader.add(DRAWER_LIST_LOGOUT);
 
         // Adding child data
@@ -308,15 +313,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
 
-                if (FLAG_ACTIVITY_RESUME) {
-                    if (listDataChild.get(
-                            listDataHeader.get(groupPosition)).get(
-                            childPosition).contains(DRAWER_LIST_POLICE)) {
 
-                        Intent intent = new Intent(MainActivity.this, PoliceInfo.class);
-                        startActivity(intent);
+                if (listDataChild.get(
+                        listDataHeader.get(groupPosition)).get(
+                        childPosition).contains(DRAWER_LIST_POLICE)) {
 
-                    }
+                    Intent intent = new Intent(MainActivity.this, PoliceInfo.class);
+                    startActivity(intent);
+
+                }
+                if (listDataChild.get(
+                        listDataHeader.get(groupPosition)).get(
+                        childPosition).contains(DRAWER_LIST_HOSPITAL)) {
+
+                    Intent intent = new Intent(MainActivity.this, HospitalInfo.class);
+                    startActivity(intent);
+
                 }
 
 
@@ -326,33 +338,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         drawer_list.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
             @Override
             public boolean onGroupClick(ExpandableListView expandableListView, View view, int i, long l) {
-                if (FLAG_ACTIVITY_RESUME) {
-                    if (listDataHeader.get(i).contains(DRAWER_LIST_MANAGE_SMS)) {
-                        Intent intent = new Intent(MainActivity.this, ManageSmsList.class);
-                        startActivity(intent);
-                    }
-                    if (listDataHeader.get(i).contains(DRAWER_LIST_LOGOUT)) {
-                        saveData.setIsLoggedIn(false);
-                        Intent home = new Intent(MainActivity.this, UserLoginActivity.class);
-                        startActivity(home);
-                        finish();
-                    }
-                    if (listDataHeader.get(i).contains(DRAWER_LIST_HISTORY)) {
-                        Intent intent = new Intent(MainActivity.this, HistoryList.class);
-                        startActivity(intent);
-                    }
-                    if (listDataHeader.get(i).contains(DRAWER_LIST_SETTING)) {
-                        Intent intent = new Intent(MainActivity.this, UserSettingActivity.class);
-                        startActivity(intent);
-                    }
-                    if (listDataHeader.get(i).contains(DRAWER_LIST_HEATMAP)) {
-                        Intent intent = new Intent(MainActivity.this, HeatMapActivity.class);
-                        startActivity(intent);
-                    }
-                    if (listDataHeader.get(i).contains(DRAWER_LIST_TUTORIAL)) {
-                        Intent intent = new Intent(MainActivity.this, HowToUse.class);
-                        startActivity(intent);
-                    }
+
+                if (listDataHeader.get(i).contains(DRAWER_LIST_MANAGE_SMS)) {
+                    Intent intent = new Intent(MainActivity.this, ManageSmsList.class);
+                    startActivity(intent);
+                }
+                if (listDataHeader.get(i).contains(DRAWER_LIST_LOGOUT)) {
+                    saveData.setIsLoggedIn(false);
+                    Intent home = new Intent(MainActivity.this, UserLoginActivity.class);
+                    startActivity(home);
+                    finish();
+                }
+                if (listDataHeader.get(i).contains(DRAWER_LIST_HISTORY)) {
+                    Intent intent = new Intent(MainActivity.this, HistoryList.class);
+                    startActivity(intent);
+                }
+                if (listDataHeader.get(i).contains(DRAWER_LIST_SETTING)) {
+                    Intent intent = new Intent(MainActivity.this, UserSettingActivity.class);
+                    startActivity(intent);
+                }
+                if (listDataHeader.get(i).contains(DRAWER_LIST_HEATMAP)) {
+                    Intent intent = new Intent(MainActivity.this, HeatMapActivity.class);
+                    startActivity(intent);
+                }
+                if (listDataHeader.get(i).contains(DRAWER_LIST_TUTORIAL)) {
+                    Intent intent = new Intent(MainActivity.this, HowToUse.class);
+                    startActivity(intent);
+                }if (listDataHeader.get(i).contains(DRAWER_LIST_ABOUTUS)) {
+                    Intent intent = new Intent(MainActivity.this, AboutUs.class);
+                    startActivity(intent);
                 }
 
 
@@ -398,7 +412,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     this.sendBroadcast(new Intent("com.google.android.intent.action.GTALK_HEARTBEAT"));
                     this.sendBroadcast(new Intent("com.google.android.intent.action.MCS_HEARTBEAT"));
 
-                    sendRequestToServer(AppConstant.getUrlForHelpSend(gcmRegId, lat, lng, saveData.getUserNotificationRange(), saveData.getNotificationMsg()));
+
+                    sendRequestToServer(AppConstant.getUrlForHelpSend(gcmRegId, lat, lng, saveData.getUserNotificationRange(), saveData.getNotificationMsg(), saveData.getDeviceId()));
                     sendSMStoFriendList();
 
                 } else {
@@ -506,7 +521,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //String phoneNo = textPhoneNo.getText().toString();
             //Log.d("DEBUG_phone", phoneNo);
             // Log.d("DEBUG_phone2", "no");
-            String sms = "HELP ME";
+            String sms = saveData.getNotificationMsg() + "\n" + saveData.getUserName();
             try {
                 SmsManager smsManager = SmsManager.getDefault();
                 smsManager.sendTextMessage(phoneNo, null, sms, null, null);
@@ -554,22 +569,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Handle your other action bar items...
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private void showGPSDisabledAlertToUser() {
-        AlertDialog.Builder localBuilder = new AlertDialog.Builder(this);
-        localBuilder.setMessage("Turn ON your GPS to get better RESULTS.").setCancelable(false).setPositiveButton("Enable GPS", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface paramAnonymousDialogInterface, int paramAnonymousInt) {
-                Intent localIntent = new Intent("android.settings.LOCATION_SOURCE_SETTINGS");
-                MainActivity.this.startActivity(localIntent);
-            }
-        });
-        localBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface paramAnonymousDialogInterface, int paramAnonymousInt) {
-                paramAnonymousDialogInterface.cancel();
-            }
-        });
-        localBuilder.create().show();
     }
 
     private void showOrHideProgressBar() {

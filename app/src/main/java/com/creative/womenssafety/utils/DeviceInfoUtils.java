@@ -4,19 +4,28 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.telephony.TelephonyManager;
+
+import java.util.UUID;
 
 
 public class DeviceInfoUtils {
     static String deviceId = "";
-    public static String getDeviceID(Context context){
-        if( deviceId.equals("") ) {
-            deviceId = "os:android,";
-            deviceId = deviceId + "version:" + getOsVersion() + ",type:" + getDeviceName() + ",retina:null,appversion:" + getAppVersion(context);
-        }
+
+    public static String getDeviceID(Context context) {
+        final TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+
+        final String tmDevice, tmSerial, androidId;
+        tmDevice = "" + tm.getDeviceId();
+        tmSerial = "" + tm.getSimSerialNumber();
+        androidId = "" + android.provider.Settings.Secure.getString(context.getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+
+        UUID deviceUuid = new UUID(androidId.hashCode(), ((long) tmDevice.hashCode() << 32) | tmSerial.hashCode());
+        deviceId = deviceUuid.toString();
         return deviceId;
     }
 
-    public static String getAppVersion(Context context){
+    public static String getAppVersion(Context context) {
         PackageInfo pInfo = null;
         try {
             pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
@@ -24,12 +33,12 @@ public class DeviceInfoUtils {
             e.printStackTrace();
         }
         String version = pInfo.versionName;
-        version.replaceAll(" " , "");
+        version.replaceAll(" ", "");
         return version;
 
     }
 
-    public static int getOsVersion(){
+    public static int getOsVersion() {
         int currentapiVersion = Build.VERSION.SDK_INT;
         return currentapiVersion;
     }
@@ -39,11 +48,11 @@ public class DeviceInfoUtils {
         String model = Build.MODEL;
         if (model.startsWith(manufacturer)) {
             String temp = capitalize(model);
-            temp=temp.replaceAll(" ", "");
+            temp = temp.replaceAll(" ", "");
             return temp;
         } else {
             String temp = capitalize(manufacturer) + " " + model;
-            temp=temp.replaceAll(" ", "");
+            temp = temp.replaceAll(" ", "");
 
             return temp;
         }

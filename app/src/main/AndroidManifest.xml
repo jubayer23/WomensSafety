@@ -66,6 +66,16 @@
                 android:value="com.creative.womenssafety.MainActivity" />
         </activity>
         <activity
+            android:name=".userInfoView.HospitalInfo"
+            android:label="@string/activity_hospital_info"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.creative.womenssafety.MainActivity" />
+        </activity>
+        <activity
             android:name=".userInfoView.HistoryList"
             android:label="@string/activity_history_list"
             android:parentActivityName=".MainActivity"
@@ -157,6 +167,17 @@
         <activity
             android:name=".HowToUse.HowToUse"
             android:label="@string/title_activity_how_to_use"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.creative.womenssafety.MainActivity" />
+
+        </activity>
+
+        <activity
+            android:name=".userInfoView.AboutUs"
+            android:label="@string/title_about_us"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme">
             <meta-data
