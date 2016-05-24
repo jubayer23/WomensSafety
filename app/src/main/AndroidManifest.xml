@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.creative.womenssafety">
+    package="com.sustcse.besafe">
 
     <permission
-        android:name="com.creative.womenssafety.permission.MAPS_RECEIVE"
+        android:name="com.sustcse.besafe.permission.MAPS_RECEIVE"
         android:protectionLevel="signature" />
 
     <!-- Adding the permission -->
@@ -40,54 +40,59 @@
     <uses-permission android:name="android.permission.SEND_SMS" />
 
     <application
-        android:name=".appdata.AppController"
+        android:name="com.sustcse.besafe.appdata.AppController"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name="com.sustcse.besafe.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme2" />
         <activity
-            android:name=".MapActivity"
+            android:name="com.sustcse.besafe.MapActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"></activity>
+            android:parentActivityName="com.sustcse.besafe.MainActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.sustcse.besafe.MainActivity" />
+        </activity>
         <activity
-            android:name=".userInfoView.PoliceInfo"
+            android:name="com.sustcse.besafe.userInfoView.PoliceInfo"
             android:label="@string/activity_police_info"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.sustcse.besafe.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.creative.womenssafety.MainActivity" />
+                android:value="com.sustcse.besafe.MainActivity" />
         </activity>
         <activity
-            android:name=".userInfoView.HospitalInfo"
+            android:name="com.sustcse.besafe.userInfoView.HospitalInfo"
             android:label="@string/activity_hospital_info"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.sustcse.besafe.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.creative.womenssafety.MainActivity" />
+                android:value="com.sustcse.besafe.MainActivity" />
         </activity>
         <activity
-            android:name=".userInfoView.HistoryList"
+            android:name="com.sustcse.besafe.userInfoView.HistoryList"
             android:label="@string/activity_history_list"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.sustcse.besafe.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.creative.womenssafety.MainActivity" />
+                android:value="com.sustcse.besafe.MainActivity" />
         </activity>
         <!-- For receiving GCM message and registration success -->
         <receiver
-            android:name=".receiver.GCMBroadcastReceiver"
+            android:name="com.sustcse.besafe.receiver.GCMBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
@@ -97,11 +102,11 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".service.GCMIntentService" />
+        <service android:name="com.sustcse.besafe.service.GCMIntentService" />
         <service
-            android:name=".service.MyService"
+            android:name="com.sustcse.besafe.service.MyService"
             android:enabled="true" />
-        <service android:name=".service.LockScreenService" />
+        <service android:name="com.sustcse.besafe.service.LockScreenService" />
 
         <!-- Goolge API Key -->
         <meta-data
@@ -112,7 +117,7 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".userview.UserLoginActivity"
+            android:name="com.sustcse.besafe.userview.UserLoginActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Dark">
@@ -123,66 +128,67 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".userview.UserRegistrationActivity"
+            android:name="com.sustcse.besafe.userview.UserRegistrationActivity"
             android:label="@string/title_activity_user_registration"
-            android:parentActivityName=".userview.UserLoginActivity"
+            android:parentActivityName="com.sustcse.besafe.userview.UserLoginActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.creative.womenssafety.userview.UserLoginActivity" />
+                android:value="com.sustcse.besafe.userview.UserLoginActivity" />
         </activity>
         <activity
-            android:name=".UserSettingView.ManageSmsList"
+            android:name="com.sustcse.besafe.UserSettingView.ManageSmsList"
             android:label="Mange SMS List"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.sustcse.besafe.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.creative.womenssafety.MainActivity" />
+                android:value="com.sustcse.besafe.MainActivity" />
         </activity>
         <activity
-            android:name=".utils.ContactListPickerUtils"
+            android:name="com.sustcse.besafe.utils.ContactListPickerUtils"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".HeatMapActivity"
-            android:parentActivityName=".MainActivity"
+            android:name="com.sustcse.besafe.HeatMapActivity"
+            android:parentActivityName="com.sustcse.besafe.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.creative.womenssafety.MainActivity" />
+                android:value="com.sustcse.besafe.MainActivity" />
         </activity>
         <activity
-            android:name=".UserSettingView.UserSettingActivity"
-            android:parentActivityName=".MainActivity"
+            android:name="com.sustcse.besafe.UserSettingView.UserSettingActivity"
+            android:parentActivityName="com.sustcse.besafe.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.creative.womenssafety.MainActivity" />
+                android:value="com.sustcse.besafe.MainActivity" />
         </activity>
         <activity
-            android:name=".HowToUse.HowToUse"
+            android:name="com.sustcse.besafe.HowToUse.HowToUse"
             android:label="@string/title_activity_how_to_use"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.sustcse.besafe.MainActivity"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.creative.womenssafety.MainActivity" />
+                android:value="com.sustcse.besafe.MainActivity" />
 
         </activity>
 
         <activity
-            android:name=".userInfoView.AboutUs"
+            android:name="com.sustcse.besafe.userInfoView.AboutUs"
             android:label="@string/title_about_us"
-            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"
+            android:parentActivityName="com.sustcse.besafe.MainActivity"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.creative.womenssafety.MainActivity" />
+                android:value="com.sustcse.besafe.MainActivity" />
 
         </activity>
 
