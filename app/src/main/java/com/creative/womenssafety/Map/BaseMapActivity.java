@@ -76,7 +76,7 @@ public abstract class BaseMapActivity extends AppCompatActivity {
     }
 
     protected float getInitialMapZoomLevel() {
-        return 12.0f;
+        return 9.0f;
     }
 
     protected abstract void initMapSettings();

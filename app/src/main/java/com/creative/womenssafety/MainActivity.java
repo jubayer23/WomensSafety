@@ -456,6 +456,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onResponse(String response) {
 
+                        //Log.d("DEBUG",response);
+
                         try {
                             JSONArray jsonArray = new JSONArray(response);
 

@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.creative.womenssafety.R;
 import com.creative.womenssafety.model.History;
-import com.creative.womenssafety.model.Police;
 
 import java.util.List;
 
@@ -65,7 +64,7 @@ public class HistoryListAdapter extends BaseAdapter {
             viewHolder.ll_layout = (LinearLayout) convertView
                     .findViewById(R.id.history_layout);
 
-            viewHolder.name = (TextView) convertView
+            viewHolder.message = (TextView) convertView
                     .findViewById(R.id.history_sms);
 
 
@@ -89,7 +88,7 @@ public class HistoryListAdapter extends BaseAdapter {
             viewHolder.ll_layout.setBackgroundColor(activity.getResources().getColor(R.color.seen));
         }
 
-        viewHolder.name.setText(history.getSms());
+        viewHolder.message.setText(history.getSms());
         viewHolder.from_username.setText(history.getName());
         viewHolder.time.setText(history.getEvent_time());
 
@@ -104,7 +103,7 @@ public class HistoryListAdapter extends BaseAdapter {
 
 
     private static class ViewHolder {
-        private TextView name;
+        private TextView message;
         private TextView time;
         private TextView from_username;
         LinearLayout ll_layout;
