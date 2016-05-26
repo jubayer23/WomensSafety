@@ -78,7 +78,7 @@ public class MyService extends Service {
                 }
                 String URL = AppConstant.getUrlForHelpSend(saveManager.getUserGcmRegId(), user_lat, user_lang,saveManager.getUserNotificationRange(),saveManager.getNotificationMsg(), saveManager.getDeviceId());
 
-                Log.d("DEBUG_helpUrl", URL);
+               // Log.d("DEBUG_helpUrl", URL);
 
                 Toast.makeText(this, "home btn press sucess", Toast.LENGTH_SHORT);
 

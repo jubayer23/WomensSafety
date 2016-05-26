@@ -16,13 +16,14 @@ import com.sustcse.besafe.MapActivity;
 import com.sustcse.besafe.R;
 import com.sustcse.besafe.receiver.GCMBroadcastReceiver;
 import com.sustcse.besafe.utils.GPSTracker;
+import com.sustcse.besafe.utils.LastLocationOnly;
 
 public class GCMIntentService extends IntentService {
 
     public static final int NOTIFICATION_ID = 1000;
     NotificationManager mNotificationManager;
     NotificationCompat.Builder builder;
-    GPSTracker gps;
+    LastLocationOnly lastLocationOnly;
 
     public GCMIntentService() {
         super(GCMIntentService.class.getName());
@@ -31,7 +32,7 @@ public class GCMIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         Bundle extras = intent.getExtras();
-        gps = new GPSTracker(this);
+        lastLocationOnly = new LastLocationOnly(this);
 
         if (!extras.isEmpty()) {
 
@@ -54,13 +55,13 @@ public class GCMIntentService extends IntentService {
                 range = extras.getString("range");
                 range.trim();
 
-                if (gps.canGetLocation()) {
+                if (lastLocationOnly.canGetLocation()) {
 
 
                     try {
                         float[] results = new float[1];
-                        Location.distanceBetween(gps.getLatitude(),
-                                gps.getLongitude(), Double.parseDouble(lat),
+                        Location.distanceBetween(lastLocationOnly.getLatitude(),
+                                lastLocationOnly.getLongitude(), Double.parseDouble(lat),
                                 Double.parseDouble(lng), results);
                         int int_result = (int) results[0];
                         int_result = (int_result / 1609);
