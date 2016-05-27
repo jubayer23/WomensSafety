@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -58,6 +59,7 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.gson.Gson;
+import com.sustcse.besafe.utils.LastLocationOnly;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -92,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private Toolbar toolbar;
 
-    GPSTracker gps;
+    private LastLocationOnly gps;
 
     public static final String DRAWER_LIST_HISTORY = "History";
     public static final String DRAWER_LIST_SEEN = "LastSeen";
@@ -179,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         // creating GPS Class object
-        gps = new GPSTracker(this);
+        gps = new LastLocationOnly(this);
 
 
         if (!checkDeviceConfig.isConnectingToInternet()) {
@@ -222,7 +224,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             saveData.setLng(String.valueOf(gps.getLongitude()));
         }
 
-        gps.stopUsingGPS();
 
 
     }
@@ -397,7 +398,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     // Read saved registration id from shared preferences.
                     gcmRegId = saveData.getUserGcmRegId();
 
-                    gps = new GPSTracker(this);
+                    gps = new LastLocationOnly(this);
 
                     String lat;
                     String lng;
@@ -411,7 +412,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         lng = String.valueOf(saveData.getLng());
                     }
 
-                    gps.stopUsingGPS();
 
 
                     this.sendBroadcast(new Intent("com.google.android.intent.action.GTALK_HEARTBEAT"));
@@ -470,16 +470,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+               // Log.d("DEBUG_error",String.valueOf(error));
+                progressBar.setVisibility(View.INVISIBLE);
+                btn_helpMe.setEnabled(true);
 
             }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("Content-Type", "application/json; charset=utf-8");
-                return headers;
-            }
-        };
+        });
+
+        req.setRetryPolicy(new DefaultRetryPolicy(3000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         AppController.getInstance().addToRequestQueue(req);
 
@@ -540,7 +539,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void sendSMStoFriendList() {
 
 
-        gps = new GPSTracker(this);
+        gps = new LastLocationOnly(this);
 
         String location = "undefined";
 
@@ -572,7 +571,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
 
-        gps.stopUsingGPS();
 
         FLAG_ACTIVITY_RESUME = true;
     }
@@ -693,14 +691,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (requestCode == REQUEST_CHECK_SETTINGS) {
 
             if (resultCode == RESULT_OK) {
-                gps = new GPSTracker(this);
+                gps = new LastLocationOnly(this);
 
                 if (gps.canGetLocation() && checkDeviceConfig.isConnectingToInternet()) {
                     saveData.setLat(String.valueOf(gps.getLatitude()));
                     saveData.setLng(String.valueOf(gps.getLongitude()));
                 }
 
-                gps.stopUsingGPS();
 
                 Toast.makeText(getApplicationContext(), "GPS enabled", Toast.LENGTH_LONG).show();
             } else {

@@ -1,9 +1,12 @@
 package com.sustcse.besafe.userInfoView;
 
+import android.app.ProgressDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -28,21 +31,38 @@ public class LastSeen extends AppCompatActivity {
     private ArrayAdapter seenListAdapter;
     private ArrayList<String> seenList;
     private Gson gson;
+    private ProgressDialog pDialog;
+    private TextView tv_error_message;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_seen);
-        init();
-    }
 
-    private void init() {
-        gson = new Gson();
-        seenListView = (ListView) findViewById(R.id.listView_seen);
+        init();
+
         prepareList();
+
         seenListAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, seenList);
         seenListView.setAdapter(seenListAdapter);
         seenListView.setEnabled(false);
+    }
+
+    private void init() {
+        pDialog = new ProgressDialog(LastSeen.this);
+        pDialog.setMessage("Loading.... Please wait...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+
+        tv_error_message = (TextView)findViewById(R.id.tv_error_message);
+        tv_error_message.setVisibility(View.INVISIBLE);
+
+
+        gson = new Gson();
+        seenListView = (ListView) findViewById(R.id.listView_seen);
+
+
+
     }
 
     private void prepareList() {
@@ -54,11 +74,14 @@ public class LastSeen extends AppCompatActivity {
     }
 
     private void sendRequestToServerForLastSeenFetch(String sentUrl) {
+        pDialog.show();
 
         StringRequest req = new StringRequest(Request.Method.GET, sentUrl,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+
+                        pDialog.dismiss();
 
                         response = response.trim();
 
@@ -70,29 +93,37 @@ public class LastSeen extends AppCompatActivity {
 
                                 if (tempObject.has("name")) {
                                     seenList.add(tempObject.getString("name"));
-                                    seenListAdapter.notifyDataSetChanged();
+
                                 }
                             }
-                            if (seenListAdapter.getCount() > 0) {
-                                Toast.makeText(LastSeen.this, "These people have seen your last alert message", Toast.LENGTH_LONG).show();
-                            } else {
-                                Toast.makeText(LastSeen.this, "Your last alert message was not seen by anyone", Toast.LENGTH_LONG).show();
+                            seenListAdapter.notifyDataSetChanged();
+                            if (seenListAdapter.getCount()<= 0) {
+                                seenListView.setVisibility(View.INVISIBLE);
+                                tv_error_message.setVisibility(View.VISIBLE);
                             }
 
 
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            pDialog.dismiss();
                         }
 
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+
+                pDialog.dismiss();
             }
         });
 
 
         AppController.getInstance().addToRequestQueue(req);
 
+    }
+
+    public void finishActivity(View view)
+    {
+        finish();
     }
 }

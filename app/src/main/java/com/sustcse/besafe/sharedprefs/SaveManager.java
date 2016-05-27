@@ -51,9 +51,16 @@ public class SaveManager {
     }
 
     public Double getLat() {
-        return Double.parseDouble(mSharedPreferences.getString(KEY_USER_LAT, "24.913596"));
+        return Double.parseDouble(mSharedPreferences.getString(KEY_USER_LAT, "0.0"));
+    }
+    public void setLng(String value) {
+        editor.putString(KEY_USER_LNG, value);
+        editor.apply();
     }
 
+    public Double getLng() {
+        return Double.parseDouble(mSharedPreferences.getString(KEY_USER_LNG, "0.0"));
+    }
     public void setDeviceId(String value) {
         editor.putString(KEY_DEVICE_ID, value);
         editor.apply();
@@ -63,14 +70,7 @@ public class SaveManager {
         return mSharedPreferences.getString(KEY_DEVICE_ID, "null");
     }
 
-    public void setLng(String value) {
-        editor.putString(KEY_USER_LNG, value);
-        editor.apply();
-    }
 
-    public Double getLng() {
-        return Double.parseDouble(mSharedPreferences.getString(KEY_USER_LNG, "91.90391"));
-    }
 
     public void setUserNotificationRange(int value) {
         editor.putInt(KEY_USER_NOTIFICATION_RANGE, value);
