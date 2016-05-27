@@ -10,7 +10,7 @@ import com.sustcse.besafe.receiver.ScreenOnOffReceiver;
 
 public class LockScreenService extends Service {
 
-    BroadcastReceiver receiver;
+    private BroadcastReceiver receiver;
 
     @Override
     public IBinder onBind(Intent intent) {

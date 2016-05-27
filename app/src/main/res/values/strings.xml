@@ -10,4 +10,5 @@
     <string name="title_activity_how_to_use">How To Use</string>
     <string name="title_about_us">About Us</string>
     <string name="activity_hospital_info">Hospital Info</string>
+    <string name="action_lastSeen">Last alert message information</string>
 </resources>

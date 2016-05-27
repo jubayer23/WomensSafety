@@ -54,6 +54,10 @@ public class AppConstant {
                 + "&reg_id=" + regId;
 
     }
+    public static String getLastSeenUrl(String deviceId) {
+        return BaseUrl + "last_seen.php?"
+                + "&device_id=" + deviceId;
+    }
 
     public static String getUrlForPoliceInfo(String region) {
         return BaseUrl + "police.php?"

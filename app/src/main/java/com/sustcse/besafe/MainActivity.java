@@ -2,7 +2,6 @@ package com.sustcse.besafe;
 
 import android.content.Intent;
 import android.content.IntentSender;
-import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -14,6 +13,8 @@ import android.support.v7.widget.Toolbar;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -42,6 +44,7 @@ import com.sustcse.besafe.userInfoView.AboutUs;
 import com.sustcse.besafe.userInfoView.HistoryList;
 import com.sustcse.besafe.userInfoView.HospitalInfo;
 import com.sustcse.besafe.userInfoView.PoliceInfo;
+import com.sustcse.besafe.userInfoView.LastSeen;
 import com.sustcse.besafe.userview.UserLoginActivity;
 import com.sustcse.besafe.utils.CheckDeviceConfig;
 import com.sustcse.besafe.utils.GPSTracker;
@@ -94,10 +97,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LastLocationOnly gps;
 
     public static final String DRAWER_LIST_HISTORY = "History";
+    public static final String DRAWER_LIST_SEEN = "LastSeen";
     public static final String DRAWER_LIST_MANAGE_SMS = "Manage Sms List";
     public static final String DRAWER_LIST_TUTORIAL = "How To Use";
     public static final String DRAWER_LIST_LOGOUT = "Logout";
-    public static final String DRAWER_LIST_SETTING = "Setting";
+    public static final String DRAWER_LIST_SETTING = "Settings";
     public static final String DRAWER_LIST_INFORMATION = "Information";
     public static final String DRAWER_LIST_HOSPITAL = "Hospital";
     public static final String DRAWER_LIST_POLICE = "Police";
@@ -116,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static boolean app_comeFrom_background = false;
 
     //private  checkDeviceConfig
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -465,16 +470,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+               // Log.d("DEBUG_error",String.valueOf(error));
+                progressBar.setVisibility(View.INVISIBLE);
+                btn_helpMe.setEnabled(true);
 
             }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("Content-Type", "application/json; charset=utf-8");
-                return headers;
-            }
-        };
+        });
+
+        req.setRetryPolicy(new DefaultRetryPolicy(3000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         AppController.getInstance().addToRequestQueue(req);
 
@@ -593,12 +597,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Pass the event to ActionBarDrawerToggle, if it returns
         // true, then it has handled the app icon touch event
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
+        if(item.getItemId()==R.id.action_lastSeen){
+            Intent intent = new Intent(MainActivity.this, LastSeen.class);
+            startActivity(intent);
+        }
+
         // Handle your other action bar items...
 
         return super.onOptionsItemSelected(item);
